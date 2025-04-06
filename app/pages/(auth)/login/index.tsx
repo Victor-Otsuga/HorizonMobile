@@ -47,8 +47,7 @@ export default function Login() {
         <Text onPress={() => router.navigate('pages/forgot')} style={styles.forgotText}>Esqueceu a senha?</Text>
       </TouchableOpacity>
 
-    
-
+  
       
 
       <Text style={styles.registerText}>
