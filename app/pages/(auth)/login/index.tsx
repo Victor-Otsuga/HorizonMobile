@@ -39,8 +39,8 @@ export default function Login() {
         <Ionicons name="eye-outline" size={20} color="#888" />
       </View>
 
-      <TouchableOpacity style={styles.loginButton}>
-        <Text onPress={signIn} style={styles.loginText}>Login</Text>
+      <TouchableOpacity onPress={() => router.navigate('pages/dashboard')} style={styles.loginButton}>
+        <Text  style={styles.loginText}>Entrar</Text>
       </TouchableOpacity>
 
       <TouchableOpacity>
