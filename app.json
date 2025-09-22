@@ -13,20 +13,30 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
+      "config":{
+        "googleMapsApiKey": "AIzaSyCXB3GA4gzaSKXfbHoaawhredTfUOdWWpY"
+      },
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyCXB3GA4gzaSKXfbHoaawhredTfUOdWWpY"
+        }
+      },
+      "package": "com.anonymous.HorizonMobile"
     },
     "web": {
       "favicon": "./assets/favicon.png",
       "bundler": "metro"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "expo-font"
     ]
   }
 }
