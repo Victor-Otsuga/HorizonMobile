@@ -124,7 +124,7 @@ export default function HorizonMap(): JSX.Element {
       }, 400);
     }
   };
-  console.log(API_KEY)
+ 
 
   const openDirections = (lat: number, lng: number) => {
     const dest = `${lat},${lng}`;

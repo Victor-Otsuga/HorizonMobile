@@ -1,55 +1,35 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-interface AuthContextType {
-  session: string | null;
-  isLoading: boolean;
-  signIn: () => void;
-  signOut: () => void;
-}
+const AuthContext = createContext({});
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth deve ser usado dentro de um AuthProvider');
-  }
-  return context;
-};
-
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [session, setSession] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const router = useRouter();
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const loadSession = async () => {
-      const storedSession = await AsyncStorage.getItem('session');
-      setSession(storedSession);
-      setIsLoading(false);
-    };
-    loadSession();
+    // Check for token/session on app start
+    AsyncStorage.getItem('userToken').then(token => {
+      if (token) setUser({ token });
+    });
   }, []);
 
-  const signIn = async () => {
-    
-    const userSession = 'token_de_autenticacao';
-    await AsyncStorage.setItem('session', userSession);
-    setSession(userSession);
-    router.replace('/(app)/');
+  const signIn = async (email, password) => {
+    // Replace with your real authentication logic
+    const token = 'mocked-token'; // Get token from API
+    await AsyncStorage.setItem('userToken', token);
+    setUser({ token });
   };
 
   const signOut = async () => {
-    await AsyncStorage.removeItem('session');
-    setSession(null);
-    router.replace('/sign-in');
+    await AsyncStorage.removeItem('userToken');
+    setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ session, isLoading, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );
-};
+}
+
+export const useAuth = () => useContext(AuthContext);
