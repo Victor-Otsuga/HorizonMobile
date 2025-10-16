@@ -67,6 +67,7 @@ export default function TabLayout() {
       <Tabs.Screen name="plus/styles" options={{ href: null }} />
       <Tabs.Screen name="store/styles" options={{ href: null }} />
       <Tabs.Screen name="settings/profile" options={{ href: null }} />
+      <Tabs.Screen name="store/profile" options={{ href: null }} />
     </Tabs>
   )
 }

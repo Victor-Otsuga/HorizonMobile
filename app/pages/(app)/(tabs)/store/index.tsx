@@ -12,36 +12,46 @@ import p7 from '../../../../../assets/7.jpg';
 import p8 from '../../../../../assets/8.jpg';
 import p9 from '../../../../../assets/9.jpg';
 
+const imageMap: Record<string, any> = {
+  p1,
+  p3,
+  p4,
+  p5,
+  p6,
+  p7,
+  p8,
+  p9,
+};
+
 const stores = [
   {
     id: '1',
     name: 'Automáticos Mooca',
     rating: 4.7,
     reviews: 478,
-    image: p3,
+    image: 'p3',
   },
   {
     id: '2',
     name: 'ZR1 Car Service',
     rating: 4.6,
     reviews: 99,
-    image: p4, 
+    image: 'p4',
   },
   {
     id: '3',
     name: 'Oficina Central',
     rating: 4.5,
     reviews: 150,
-    image: p1,
+    image: 'p1',
   },
   {
     id: '4',
     name: 'Tecpolish ',  
     rating: 4.4,
     reviews: 85,
-    image: p5,
+    image: 'p5',
   },
-
 ];
 
 const partners = [
@@ -50,34 +60,34 @@ const partners = [
     name: 'Oficina do Zé',
     rating: 4.8,
     reviews: 320,
-    image: p6,
+    image: 'p6',
   },
   { 
     id: '2',
     name: 'AutoPlus',
     rating: 4.7,
     reviews: 210,
-    image: p7,
+    image: 'p7',
   },
   {
     id: '3',
     name: 'CarFix',
     rating: 4.6,
     reviews: 180,
-    image: p8,
+    image: 'p8',
   },
   {
     id: '4',
     name: 'Mecânica Rápida',
     rating: 4.5,  
     reviews: 140,
-    image: p9,
+    image: 'p9',
   },
 ];
 
 export default function Store() {
   const router = useRouter();
-  const handlePressStore = (store: { id: string; name: string; rating: number; reviews: number; image: any; }) => {
+  const handlePressStore = (store: { id: string; name: string; rating: number; reviews: number; image: string; }) => {
     router.push({
       pathname: '/pages/(app)/(tabs)/store/profile',
       params: {
@@ -85,7 +95,7 @@ export default function Store() {
         name: store.name,
         rating: store.rating,
         reviews: store.reviews,
-        // You may need to pass image as a string path or index, not as an object
+        image: store.image,
       },
     });
   };
@@ -115,7 +125,7 @@ export default function Store() {
           horizontal
           renderItem={({ item }) => (
             <TouchableOpacity style={styles.card} onPress={() => handlePressStore(item)}>
-              <Image source={item.image } style={styles.cardImage} />
+              <Image source={imageMap[item.image]} style={styles.cardImage} />
               <Text style={styles.cardTitle}>{item.name}</Text>
               <Text style={styles.cardRating}>
                 ⭐ {item.rating} ({item.reviews})
@@ -138,7 +148,7 @@ export default function Store() {
           horizontal
           renderItem={({ item }) => (
             <TouchableOpacity style={styles.card} onPress={() => handlePressStore(item)}>
-              <Image source={item.image } style={styles.cardImage} />
+              <Image source={imageMap[item.image]} style={styles.cardImage} />
               <Text style={styles.cardTitle}>{item.name}</Text>
               <Text style={styles.cardRating}>
                 ⭐ {item.rating} ({item.reviews})
@@ -189,8 +199,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 8,
     justifyContent: 'space-between',
-    alignItems: 'left',
-    
+    alignItems: 'flex-start',
   },
   cardImage: { width: 120, height: 80, borderRadius: 8, backgroundColor: '#eee' },
   cardTitle: { fontSize: 16, fontWeight: 'bold', marginTop: 8 },
@@ -198,7 +207,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default function StoreProfile() {
-  const { id, name, rating, reviews } = useLocalSearchParams();
-  // Use these params to render the profile
-}
+
