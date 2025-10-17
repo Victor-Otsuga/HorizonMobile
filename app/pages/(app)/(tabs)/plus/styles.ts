@@ -6,17 +6,23 @@ const { width } = Dimensions.get('window');
 export default StyleSheet.create({
 	container: {
 		flex: 1,
-		backgroundColor: '#0b0f13',
+		backgroundColor: colors.background,
 		padding: 16,
+		paddingBottom: 80,
+		paddingTop: 40,
+	},
+	scrollContent: {
+		paddingBottom: 24,
 	},
 	card: {
 		borderRadius: 12,
 		overflow: 'hidden',
 		marginBottom: 12,
+		backgroundColor: colors.light,
 	},
 	modelPlaceholder: {
 		height: 200,
-		backgroundColor: '#0f1417',
+		backgroundColor: colors.light,
 		borderRadius: 12,
 		justifyContent: 'center',
 		alignItems: 'center',
@@ -42,18 +48,18 @@ export default StyleSheet.create({
 		marginLeft: 6,
 	},
 	infoCard: {
-		backgroundColor: '#081018',
+		backgroundColor: colors.light,
 		borderRadius: 12,
 		padding: 16,
 		marginBottom: 12,
 	},
 	title: {
-		color: colors.background,
+		color: colors.textDark,
 		fontSize: 22,
 		fontWeight: '700',
 	},
 	subtitle: {
-		color: '#9aa0a6',
+		color: colors.textLight,
 		marginTop: 4,
 	},
 	rowTop: {
@@ -61,17 +67,17 @@ export default StyleSheet.create({
 		alignItems: 'center',
 		marginTop: 8,
 	},
-	badge: {
-		backgroundColor: '#0c1a23',
+		badge: {
+			backgroundColor: colors.inputBackground,
 		paddingHorizontal: 8,
 		paddingVertical: 6,
 		borderRadius: 8,
 	},
-	badgeText: {
-		color: '#cfd8dc',
+		badgeText: {
+			color: colors.textDark,
 	},
-	km: {
-		color: '#8a969a',
+		km: {
+			color: colors.textLight,
 		marginLeft: 10,
 	},
 	featuresRow: {
@@ -79,19 +85,19 @@ export default StyleSheet.create({
 		justifyContent: 'space-between',
 		marginTop: 12,
 	},
-	featureBox: {
-		backgroundColor: '#071217',
+		featureBox: {
+			backgroundColor: colors.light,
 		width: (width - 64) / 3,
 		padding: 12,
 		borderRadius: 10,
 		alignItems: 'center',
 	},
-	featureLabel: {
-		color: '#9aa0a6',
+		featureLabel: {
+			color: colors.textLight,
 		marginTop: 8,
 	},
 	featureValue: {
-		color: colors.background,
+			color: colors.textDark,
 		marginTop: 6,
 		fontWeight: '600',
 	},
@@ -104,14 +110,14 @@ export default StyleSheet.create({
 		color: '#7f8b8f',
 	},
 	smallValue: {
-		color: colors.background,
+		color: colors.textDark,
 		marginTop: 6,
 		fontWeight: '600',
 	},
-	alertsSection: {
-		marginTop: 8,
-		marginBottom: 18,
-	},
+		alertsSection: {
+			marginTop: 8,
+			marginBottom: 18,
+		},
 	statusRow: {
 		flexDirection: 'row',
 		justifyContent: 'space-between',
@@ -120,30 +126,30 @@ export default StyleSheet.create({
 		alignItems: 'center',
 		width: (width - 64) / 3,
 	},
-	statusCircleGreen: {
-		width: 68,
-		height: 68,
-		borderRadius: 34,
-		backgroundColor: '#0b2f1e',
+		statusCircleGreen: {
+			width: 68,
+			height: 68,
+			borderRadius: 34,
+			backgroundColor: '#e8f5e9',
 		justifyContent: 'center',
 		alignItems: 'center',
 		marginBottom: 8,
 	},
-	statusCircleYellow: {
-		width: 68,
-		height: 68,
-		borderRadius: 34,
-		backgroundColor: '#3a2a0b',
+		statusCircleYellow: {
+			width: 68,
+			height: 68,
+			borderRadius: 34,
+			backgroundColor: '#fff3e0',
 		justifyContent: 'center',
 		alignItems: 'center',
 		marginBottom: 8,
 	},
 	statusPercent: {
-		color: colors.background,
+			color: colors.textDark,
 		fontWeight: '700',
 	},
 	statusLabel: {
-		color: '#9aa0a6',
+			color: colors.textLight,
 	},
 	sectionTitle: {
 		color: colors.background,
@@ -152,8 +158,8 @@ export default StyleSheet.create({
 		marginBottom: 8,
 		fontWeight: '600',
 	},
-	alertCard: {
-		backgroundColor: '#071217',
+		alertCard: {
+			backgroundColor: colors.light,
 		padding: 14,
 		borderRadius: 12,
 		marginBottom: 8,
@@ -161,7 +167,7 @@ export default StyleSheet.create({
 		borderLeftColor: '#f39c12',
 	},
 	alertCardSuccess: {
-		backgroundColor: '#071217',
+			backgroundColor: colors.light,
 		padding: 14,
 		borderRadius: 12,
 		marginBottom: 8,
@@ -169,33 +175,33 @@ export default StyleSheet.create({
 		borderLeftColor: '#2ecc71',
 	},
 	alertTitle: {
-		color: colors.background,
+			color: colors.textDark,
 		fontWeight: '600',
 	},
 	alertSub: {
-		color: '#9aa0a6',
+			color: colors.textLight,
 		marginTop: 6,
 	},
 	secondaryButton: {
-		borderWidth: 1,
-		borderColor: '#102029',
+			borderWidth: 1,
+			borderColor: colors.border,
 		padding: 12,
 		borderRadius: 10,
 		marginTop: 8,
 		alignItems: 'center',
 	},
 	secondaryText: {
-		color: colors.background,
+			color: colors.textDark,
 	},
 	ctaButton: {
-		backgroundColor: colors.primary,
+			backgroundColor: colors.Green,
 		padding: 14,
 		borderRadius: 12,
 		alignItems: 'center',
 		marginBottom: 16,
 	},
 	ctaText: {
-		color: colors.background,
+			color: colors.background,
 		fontWeight: '700',
 		fontSize: 16,
 	},

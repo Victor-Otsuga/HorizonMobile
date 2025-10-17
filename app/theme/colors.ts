@@ -14,6 +14,7 @@ const colors = {
     border: "#E1E4F0",
     textDark: "#1A1A1A",
     textLight: "#B0B3C7",
+    Green: "#2ecc71",
   };
   
   export default colors;

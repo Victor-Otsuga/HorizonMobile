@@ -1,20 +1,19 @@
 import React from 'react';
-import { View, Text, SafeAreaView, TouchableOpacity, Image } from 'react-native';
+import { View, Text, SafeAreaView, TouchableOpacity, Image, ScrollView } from 'react-native';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
+import CircularProgress from '../../../../components/CircularProgress';
 import styles from './styles';
 
 export default function Plus() {
   return (
     <SafeAreaView style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
       {/* 3D Model / AR area */}
       <View style={styles.card}>
         <View style={styles.modelPlaceholder}>
           {/* Placeholder image / 3D model container - replace with real 3D/AR component later */}
-          <Image source={require('../../../../../assets/4.jpg')} style={styles.modelImage} resizeMode="cover" />
-          <TouchableOpacity style={styles.arButton}>
-            <MaterialIcons name="open-in-full" size={16} color="#fff" />
-            <Text style={styles.arButtonText}>Ver em AR</Text>
-          </TouchableOpacity>
+          <Image source={require('../../../../../assets/civic.png')} style={styles.modelImage} resizeMode="cover" />
+          
         </View>
       </View>
 
@@ -64,15 +63,21 @@ export default function Plus() {
       <View style={styles.alertsSection}>
         <View style={styles.statusRow}>
           <View style={styles.statusItem}>
-            <View style={styles.statusCircleGreen}><Text style={styles.statusPercent}>85%</Text></View>
+            <CircularProgress size={68} strokeWidth={6} progress={85} color={styles.ctaButton.backgroundColor || '#2ecc71'} bgColor="#e6f4ea">
+              <Text style={styles.statusPercent}>85%</Text>
+            </CircularProgress>
             <Text style={styles.statusLabel}>Bateria</Text>
           </View>
           <View style={styles.statusItem}>
-            <View style={styles.statusCircleYellow}><Text style={styles.statusPercent}>65%</Text></View>
+            <CircularProgress size={68} strokeWidth={6} progress={65} color="#f39c12" bgColor="#fff5e6">
+              <Text style={styles.statusPercent}>65%</Text>
+            </CircularProgress>
             <Text style={styles.statusLabel}>Óleo</Text>
           </View>
           <View style={styles.statusItem}>
-            <View style={styles.statusCircleGreen}><Text style={styles.statusPercent}>90%</Text></View>
+            <CircularProgress size={68} strokeWidth={6} progress={90} color={styles.ctaButton.backgroundColor || '#2ecc71'} bgColor="#e6f4ea">
+              <Text style={styles.statusPercent}>90%</Text>
+            </CircularProgress>
             <Text style={styles.statusLabel}>Pneus</Text>
           </View>
         </View>
@@ -87,9 +92,10 @@ export default function Plus() {
         <TouchableOpacity style={styles.secondaryButton}><Text style={styles.secondaryText}>Adicionar observação do veículo</Text></TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.ctaButton}>
-        <Text style={styles.ctaText}>Agendar Revisão</Text>
-      </TouchableOpacity>
+        <TouchableOpacity style={styles.ctaButton}>
+          <Text style={styles.ctaText}>Agendar Revisão</Text>
+        </TouchableOpacity>
+      </ScrollView>
     </SafeAreaView>
   );
 }
