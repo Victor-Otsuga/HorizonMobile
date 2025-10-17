@@ -20,9 +20,10 @@ type TabIconProps = {
 }
 
 type CustomTabBarButtonProps = {
-  onPress?: () => void
-  accessibilityState?: { selected: boolean }
-  children?: React.ReactNode
+  onPress?: (e?: any) => void;
+  accessibilityState?: { selected?: boolean };
+  children?: React.ReactNode;
+  [key: string]: any;
 }
 
 export default function TabLayout() {
@@ -35,7 +36,7 @@ export default function TabLayout() {
 
     const CustomTabBarButton = ({ onPress, children }: CustomTabBarButtonProps) => (
       <TouchableOpacity style={styles.plusButton} onPress={onPress}>
-        <Text style={styles.plusText}>+</Text>
+        <FontAwesome name="car" size={28} color={colors.background} />
       </TouchableOpacity>
     )
 
@@ -50,13 +51,12 @@ export default function TabLayout() {
           borderTopWidth: 0,
           backgroundColor: '#fff',
           paddingTop: 10,
-          ActivityIndicator,
         },
       }}
     >
       <Tabs.Screen name="dashboard/index" options={{ tabBarIcon: renderIcon('home') }} />
       <Tabs.Screen name="store/index" options={{ tabBarIcon: renderIcon('shopping-cart') }} />
-      <Tabs.Screen name="plus/index" options={{  tabBarButton: (props: JSX.IntrinsicAttributes & CustomTabBarButtonProps) => <CustomTabBarButton {...props} /> }} />
+  <Tabs.Screen name="plus/index" options={{ tabBarButton: (props) => <CustomTabBarButton {...props} /> }} />
       <Tabs.Screen name="chat/index" options={{ tabBarIcon: renderIcon('comment') }} />
       <Tabs.Screen name="settings/index" options={{ tabBarIcon: renderIcon('cog') }} />
 

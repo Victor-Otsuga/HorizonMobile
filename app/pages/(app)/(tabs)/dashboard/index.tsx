@@ -234,8 +234,8 @@ export default function HorizonMap(): JSX.Element {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  searchContainer: { position: 'absolute', top: 12, left: 12, right: 12, zIndex: 20 },
+  container: { flex: 1, paddingTop: Platform.OS === 'android' ? 20 : 0 },
+  searchContainer: { position: 'absolute', top: 35, left: 12, right: 12, zIndex: 20 },
   searchInput: {
     backgroundColor: 'white',
     padding: 12,
