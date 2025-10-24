@@ -13,10 +13,14 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "config":{
+      "config": {
         "googleMapsApiKey": "AIzaSyCXB3GA4gzaSKXfbHoaawhredTfUOdWWpY"
       },
       "supportsTablet": true
+      ,
+      "infoPlist": {
+        "NSCameraUsageDescription": "Usado para escanear códigos QR e permitir funcionalidades de câmera."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -29,6 +33,10 @@
         }
       },
       "package": "com.anonymous.HorizonMobile"
+    ,
+      "permissions": [
+        "CAMERA"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -36,7 +44,8 @@
     },
     "plugins": [
       "expo-router",
-      "expo-font"
+      "expo-font",
+      "expo-barcode-scanner"
     ]
   }
 }

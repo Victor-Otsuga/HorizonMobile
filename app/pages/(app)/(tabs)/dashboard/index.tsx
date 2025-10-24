@@ -13,6 +13,8 @@ import {
   Platform,
 } from 'react-native';
 import MapView, { Marker, Callout, PROVIDER_GOOGLE } from 'react-native-maps';
+import { useViewMode } from '../../../../../context/ViewModeContext';
+import { useRouter } from 'expo-router';
 import * as Location from 'expo-location';
 
 // Import da API Key (mesma forma que você usou no outro código)
@@ -30,38 +32,84 @@ interface Mechanic {
   note?: string;
 }
 
-// MOCKED "database" of 3 mechanics (tipado)
+// MOCKED mechanics converted from `store/index.tsx` (stores + partners)
 const MOCK_MECHANICS: Mechanic[] = [
   {
-    id: 'm1',
-    name: 'Oficina do João',
-    address: 'Av. Paulista, 1000 - Bela Vista, São Paulo',
-    latitude: -23.561414,
-    longitude: -46.655881,
-    phone: '+55 11 99999-0001',
-    note: 'Especializada em suspensão e alinhamento',
+    id: '1',
+    name: 'Automáticos Mooca',
+    address: 'Mooca, São Paulo',
+    latitude: -23.5365,
+    longitude: -46.5889,
+    phone: '+55 11 99999-1001',
+    note: 'Especializada em transmissões automáticas',
   },
   {
-    id: 'm2',
-    name: 'Mecânica Central',
-    address: 'Rua das Flores, 45 - Centro, São Paulo',
-    latitude: -23.548943,
-    longitude: -46.638818,
-    phone: '+55 11 99999-0002',
+    id: '2',
+    name: 'ZR1 Car Service',
+    address: 'Bela Vista, São Paulo',
+    latitude: -23.5508,
+    longitude: -46.6332,
+    phone: '+55 11 99999-1002',
     note: 'Troca de óleo, freios e elétrica',
   },
   {
-    id: 'm3',
-    name: 'Auto Service Vitória',
-    address: 'R. da Consolação, 200 - Consolação, São Paulo',
-    latitude: -23.558704,
-    longitude: -46.662880,
-    phone: '+55 11 99999-0003',
-    note: 'Atendimento rápido e garantia de serviço',
+    id: '3',
+    name: 'Oficina Central',
+    address: 'Centro, São Paulo',
+    latitude: -23.5410,
+    longitude: -46.6340,
+    phone: '+55 11 99999-1003',
+    note: 'Serviços gerais e manutenção preventiva',
+  },
+  {
+    id: '4',
+    name: 'Tecpolish',
+    address: 'Vila Mariana, São Paulo',
+    latitude: -23.5880,
+    longitude: -46.6355,
+    phone: '+55 11 99999-1004',
+    note: 'Polimento e estética automotiva',
+  },
+  {
+    id: 'p1',
+    name: 'Oficina do Zé',
+    address: 'Bela Vista, São Paulo',
+    latitude: -23.5580,
+    longitude: -46.6400,
+    phone: '+55 11 99999-2001',
+    note: 'Oficina parceira - serviços rápidos',
+  },
+  {
+    id: 'p2',
+    name: 'AutoPlus',
+    address: 'Centro, São Paulo',
+    latitude: -23.5490,
+    longitude: -46.6350,
+    phone: '+55 11 99999-2002',
+    note: 'Rede de oficinas credenciadas',
+  },
+  {
+    id: 'p3',
+    name: 'CarFix',
+    address: 'Consolação, São Paulo',
+    latitude: -23.5475,
+    longitude: -46.6520,
+    phone: '+55 11 99999-2003',
+    note: 'Mecânica rápida e diagnósticos',
+  },
+  {
+    id: 'p4',
+    name: 'Mecânica Rápida',
+    address: 'Vila Buarque, São Paulo',
+    latitude: -23.5520,
+    longitude: -46.6600,
+    phone: '+55 11 99999-2004',
+    note: 'Atendimento expresso',
   },
 ];
 
 export default function HorizonMap(): JSX.Element {
+  const { mode } = useViewMode();
   // tipando corretamente o ref do MapView
   const mapRef = useRef<MapView | null>(null);
   const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
@@ -76,6 +124,7 @@ export default function HorizonMap(): JSX.Element {
   // tipagem explícita do selectedMechanic para evitar inferência como 'never'
   const [selectedMechanic, setSelectedMechanic] = useState<Mechanic | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     (async () => {
@@ -124,6 +173,14 @@ export default function HorizonMap(): JSX.Element {
       }, 400);
     }
   };
+
+  const navigateToProfile = (mechanic: Mechanic) => {
+    // pass full mechanic object as JSON to profile page
+    router.push({
+      pathname: '/pages/(app)/(tabs)/store/profile',
+      params: { workshop: JSON.stringify(mechanic) },
+    });
+  };
  
 
   const openDirections = (lat: number, lng: number) => {
@@ -145,6 +202,23 @@ export default function HorizonMap(): JSX.Element {
     });
   };
 
+  if (mode === 'mechanic') {
+    // mechanic overview
+    return (
+      <SafeAreaView style={{ flex: 1, padding: 16 }}>
+        <Text style={{ fontSize: 22, fontWeight: '700', marginBottom: 8 }}>Painel do Mecânico</Text>
+        <Text style={{ marginBottom: 6 }}>Serviços agendados hoje: 4</Text>
+        <Text style={{ marginBottom: 12 }}>Receita estimada: R$ 2.450,00</Text>
+        <View style={{ backgroundColor: '#fff', padding: 12, borderRadius: 10 }}>
+          <Text style={{ fontWeight: '700', marginBottom: 8 }}>Próximos atendimentos</Text>
+          <Text>09:00 - João - Troca de óleo</Text>
+          <Text>10:30 - Maria - Alinhamento</Text>
+          <Text>13:30 - Carlos - Freios</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.searchContainer}>
@@ -163,7 +237,7 @@ export default function HorizonMap(): JSX.Element {
               keyExtractor={(i) => i.id}
               renderItem={({ item }) => (
                 <TouchableOpacity style={styles.suggestionItem} onPress={() => handleSelectMechanic(item)}>
-                  <Text style={styles.suggestionTitle}>{item.name}</Text>
+                  <Text style={styles.suggestionTitle} onPress={() => navigateToProfile(item)}>{item.name}</Text>
                   <Text style={styles.suggestionSubtitle}>{item.address}</Text>
                 </TouchableOpacity>
               )}
@@ -191,10 +265,13 @@ export default function HorizonMap(): JSX.Element {
             <View style={styles.markerBubble}>
               <Text style={{ fontWeight: 'bold' }}>🔧</Text>
             </View>
-            <Callout onPress={() => handleSelectMechanic(m)}>
+            <Callout>
               <View style={{ width: 200 }}>
                 <Text style={{ fontWeight: 'bold' }}>{m.name}</Text>
                 <Text numberOfLines={2}>{m.address}</Text>
+                <TouchableOpacity onPress={() => navigateToProfile(m)} style={{ marginTop: 8 }}>
+                  <Text style={{ color: '#1e90ff' }}>Ver perfil</Text>
+                </TouchableOpacity>
               </View>
             </Callout>
           </Marker>
@@ -225,6 +302,17 @@ export default function HorizonMap(): JSX.Element {
               >
                 <Text style={styles.buttonText}>Ir para cá</Text>
               </TouchableOpacity>
+                 <TouchableOpacity
+                  style={[styles.button, { backgroundColor: '#1e90ff' }]}
+                  onPress={() => {
+                    if (selectedMechanic) {
+                      setModalVisible(false);
+                      navigateToProfile(selectedMechanic);
+                    }
+                  }}
+                >
+                  <Text style={styles.buttonText}>Ver Perfil</Text>
+                </TouchableOpacity>
             </View>
           </View>
         </View>

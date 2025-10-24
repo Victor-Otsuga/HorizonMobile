@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useViewMode } from '../../../../../context/ViewModeContext';
 
 
 import p1 from '../../../../../assets/2.jpg';
@@ -86,6 +87,7 @@ const partners = [
 ];
 
 export default function Store() {
+  const { mode } = useViewMode();
   const router = useRouter();
   const handlePressStore = (store: { id: string; name: string; rating: number; reviews: number; image: string; }) => {
     router.push({
@@ -99,6 +101,28 @@ export default function Store() {
       },
     });
   };
+  if (mode === 'mechanic') {
+    const parts = [
+      { id: 'a1', name: 'Filtro de óleo - Rede Ancora', price: 'R$ 45,00' },
+      { id: 'a2', name: 'Pastilha de freio - Rede Ancora', price: 'R$ 120,00' },
+      { id: 'a3', name: 'Amortecedor dianteiro - Rede Ancora', price: 'R$ 380,00' },
+    ];
+
+    return (
+      <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 100 }}>
+        <View style={styles.container}>
+          <Text style={{ fontSize: 22, fontWeight: '700', marginBottom: 12 }}>Marketplace - Rede Ancora</Text>
+          {parts.map(p => (
+            <View key={p.id} style={{ padding: 12, backgroundColor: '#fff', marginBottom: 8, borderRadius: 8 }}>
+              <Text style={{ fontWeight: '700' }}>{p.name}</Text>
+              <Text style={{ color: '#666' }}>{p.price}</Text>
+            </View>
+          ))}
+        </View>
+      </ScrollView>
+    );
+  }
+
   return (
     <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 100 }}>
       <View style={styles.container}>

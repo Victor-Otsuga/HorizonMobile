@@ -56,9 +56,9 @@ export default function TabLayout() {
     >
       <Tabs.Screen name="dashboard/index" options={{ tabBarIcon: renderIcon('home') }} />
       <Tabs.Screen name="store/index" options={{ tabBarIcon: renderIcon('shopping-cart') }} />
-  <Tabs.Screen name="plus/index" options={{ tabBarButton: (props) => <CustomTabBarButton {...props} /> }} />
-      <Tabs.Screen name="chat/index" options={{ tabBarIcon: renderIcon('comment') }} />
-      <Tabs.Screen name="settings/index" options={{ tabBarIcon: renderIcon('cog') }} />
+  <Tabs.Screen name="plus/index" options={{ tabBarButton: (props) => <CustomTabBarButton {...props} /> }} />      
+  <Tabs.Screen name="chat/index" options={{ tabBarIcon: renderIcon('comment') }} />
+  <Tabs.Screen name="settings/index" options={{ tabBarIcon: renderIcon('cog') }} />
 
       {/* rotas que nao devem aparecer na navbar */}
       <Tabs.Screen name="dashboard/styles" options={{ href: null }} />
