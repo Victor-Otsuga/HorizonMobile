@@ -15,12 +15,12 @@ export default function ProfileScreen() {
 
       <View style={styles.card}>
         <Image
-          source={{ uri: 'https://randomuser.me/api/portraits/men/4.jpg' }}
+          source={{ uri: 'https://randomuser.me/api/portraits/men/10.jpg' }}
           style={styles.avatar}
         />
         <View>
-          <Text style={styles.name}>Victor Otsuga</Text>
-          <Text style={styles.id}>#PIK12897</Text>
+          <Text style={styles.name}>Victor Augusto</Text>
+          <Text style={styles.id}>#HO120967</Text>
         </View>
       </View>
 
