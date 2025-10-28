@@ -1,0 +1,61 @@
+apply plugin: "com.android.application"
+apply plugin: "com.facebook.react"
+apply plugin: "kotlin-android"
+
+import com.android.build.OutputFile
+
+android {
+    compileSdkVersion 35
+
+    defaultConfig {
+        applicationId "com.horizonmobile"
+        minSdkVersion 24
+        targetSdkVersion 35
+        versionCode 1
+        versionName "1.0.0"
+        multiDexEnabled true
+    }
+
+    signingConfigs {
+        debug {
+            storeFile file("debug.keystore")
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+
+    packagingOptions {
+        resources {
+            excludes += ["/META-INF/{AL2.0,LGPL2.1}"]
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.8.21"
+
+    implementation "com.facebook.react:react-native:0.79.6"  // ajuste conforme necessário
+
+    // Expo barcode scanner
+    implementation "expo.modules.barcodescanner:expo-barcodescanner:13.0.1"
+
+    // Outras libs
+    implementation "androidx.multidex:multidex:2.0.1"
+}
+
