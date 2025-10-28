@@ -3,7 +3,6 @@ import { View, Text, SafeAreaView, TouchableOpacity, Image, ScrollView, TextInpu
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { Linking } from 'react-native';
 import CircularProgress from '../../../../components/CircularProgress';
-import QRCodeScanner from 'expo-qrcode-scanner';
 import styles from './styles';
 import { useViewMode } from '../../../../../context/ViewModeContext';
 

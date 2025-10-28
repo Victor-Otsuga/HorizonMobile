@@ -12,7 +12,7 @@ import {
   Platform,
   Image,
 } from 'react-native';
-import colors from '../../../theme/colors';
+import colors from '../../../../theme/colors';
 import styles from './styles';
 import { Ionicons } from '@expo/vector-icons';
 
