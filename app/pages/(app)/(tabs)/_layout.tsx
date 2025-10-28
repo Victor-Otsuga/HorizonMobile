@@ -65,7 +65,7 @@ export default function TabLayout() {
         },
       }}
     >
-      <Tabs.Screen name="dashboard/index" options={{ tabBarIcon: renderIcon('home') }} c />
+      <Tabs.Screen name="dashboard/index" options={{ tabBarIcon: renderIcon('home') }} />
       <Tabs.Screen name="store/index" options={{ tabBarIcon: renderIcon('shopping-cart') }} />
       <Tabs.Screen name="plus/index" options={{ tabBarButton: (props) => <CustomTabBarButton {...props} /> }} />
       <Tabs.Screen name="chat/index" options={{ tabBarIcon: renderIcon('comment') }} />

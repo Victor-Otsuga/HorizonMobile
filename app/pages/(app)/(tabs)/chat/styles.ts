@@ -4,6 +4,9 @@ import colors from '../../../../theme/colors';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingBottom: 100,
+    paddingTop: 30,
+    
     backgroundColor: colors.background,
   },
   chatContainer: {
@@ -154,7 +157,7 @@ const styles = StyleSheet.create({
   fab: {
     position: 'absolute',
     right: 20,
-    bottom: 20,
+    bottom: 100,
     width: 60,
     height: 60,
     borderRadius: 30,
@@ -166,9 +169,11 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 6,
+  
   },
   modalOverlay: {
     flex: 1,
+
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContent: {
