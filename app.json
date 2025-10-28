@@ -8,14 +8,10 @@
     "web": {
       "favicon": "./assets/favicon.png",
       "bundler": "metro"
-<<<<<<< HEAD
     },
     "plugins": [
       "expo-router",
       "expo-font"
     ]
-=======
-    }
->>>>>>> e4d784f2029133593bec98372b8b6c92fa77c465
   }
 }

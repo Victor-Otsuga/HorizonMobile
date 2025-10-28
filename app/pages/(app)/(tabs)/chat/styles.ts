@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import colors from '../../../theme/colors';
+import colors from '../../../../theme/colors';
 
 const styles = StyleSheet.create({
   container: {
@@ -21,6 +21,10 @@ const styles = StyleSheet.create({
   },
   backButton: {
     marginRight: 12,
+    padding: 4,
+  },
+  changeMechanicButton: {
+    marginLeft: 12,
     padding: 4,
   },
   chatHeaderInfo: {
@@ -82,6 +86,15 @@ const styles = StyleSheet.create({
   },
   chatBubbleTimeOther: {
     color: colors.textLight,
+  },
+  typingIndicator: {
+    padding: 12,
+    alignItems: 'flex-start',
+  },
+  typingText: {
+    fontSize: 13,
+    color: colors.textLight,
+    fontStyle: 'italic',
   },
   inputContainer: {
     flexDirection: 'row',

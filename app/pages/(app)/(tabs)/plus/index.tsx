@@ -13,6 +13,11 @@ import {
 } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { Ionicons } from '@expo/vector-icons';
+import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
+import { Linking } from 'react-native';
+import CircularProgress from '../../../../components/CircularProgress';
+import styles from './styles';
+import { useViewMode } from '../../../../../context/ViewModeContext';
 
 export default function QRScannerScreen() {
   const [permission, requestPermission] = useCameraPermissions();
