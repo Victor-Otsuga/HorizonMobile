@@ -32,7 +32,7 @@ interface Mechanic {
   specialty: string;
 }
 
-// Mock de mecânicos
+// Mock de mecânicos - Lista expandida com mais exemplos
 const MOCK_MECHANICS: Mechanic[] = [
   {
     id: '1',
@@ -68,6 +68,41 @@ const MOCK_MECHANICS: Mechanic[] = [
     avatar: 'https://randomuser.me/api/portraits/men/5.jpg',
     isOnline: true,
     specialty: 'Injeção Eletrônica',
+  },
+  {
+    id: '6',
+    name: 'Roberto Martins',
+    avatar: 'https://randomuser.me/api/portraits/men/6.jpg',
+    isOnline: true,
+    specialty: 'Lataria e Pintura',
+  },
+  {
+    id: '7',
+    name: 'Juliana Ferreira',
+    avatar: 'https://randomuser.me/api/portraits/women/7.jpg',
+    isOnline: true,
+    specialty: 'Diagnóstico Eletrônico',
+  },
+  {
+    id: '8',
+    name: 'Fernando Souza',
+    avatar: 'https://randomuser.me/api/portraits/men/8.jpg',
+    isOnline: false,
+    specialty: 'Revisão Completa',
+  },
+  {
+    id: '9',
+    name: 'Patricia Alves',
+    avatar: 'https://randomuser.me/api/portraits/women/9.jpg',
+    isOnline: true,
+    specialty: 'Troca de Fluidos',
+  },
+  {
+    id: '10',
+    name: 'Rafael Costa',
+    avatar: 'https://randomuser.me/api/portraits/men/10.jpg',
+    isOnline: true,
+    specialty: 'Sistema de Direção',
   },
 ];
 
@@ -165,6 +200,7 @@ export default function Chat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
   const flatListRef = useRef<FlatList>(null);
 
   // Scroll automático para a última mensagem
@@ -203,8 +239,12 @@ export default function Chat() {
     setMessages((prev) => [...prev, newMessage]);
     setInputText('');
 
-    // Simular resposta automática do mecânico
+    // Mostrar indicador de digitação
+    setIsTyping(true);
+
+    // Simular resposta automática do mecânico após 2 segundos
     setTimeout(() => {
+      setIsTyping(false);
       const responseMessage: Message = {
         id: (Date.now() + 1).toString(),
         text: generateAutoResponse(),
@@ -215,16 +255,72 @@ export default function Chat() {
     }, 2000);
   };
 
-  // Gerar resposta automática simulada
+  // Gerar resposta automática simulada baseada na especialidade do mecânico
   const generateAutoResponse = (): string => {
-    const responses = [
-      'Entendi! Posso ajudar com isso.',
-      'Interessante! Vou verificar isso para você.',
-      'Obrigado pela informação. Como posso prosseguir?',
-      'Claro! Posso orientar você sobre isso.',
-      'Perfeito! Deixe-me pensar na melhor solução.',
-    ];
-    return responses[Math.floor(Math.random() * responses.length)];
+    if (!selectedMechanic) return 'Posso ajudar com isso.';
+    
+    const responses = {
+      'Motor e Transmissão': [
+        'Entendi! Vou verificar o sistema de transmissão.',
+        'Sobre motores e transmissão, posso ajudar com isso.',
+        'Deixe-me analisar o problema do motor.',
+      ],
+      'Elétrica Automotiva': [
+        'Entendido! Vou checar a parte elétrica do veículo.',
+        'Problemas elétricos são meu foco. Vamos resolver!',
+        'Deixe-me verificar o sistema elétrico.',
+      ],
+      'Freios e Suspensão': [
+        'Vou verificar o sistema de freios.',
+        'Entendi! Vou checar freios e suspensão.',
+        'Deixe-me analisar o sistema de suspensão.',
+      ],
+      'Ar Condicionado': [
+        'Vou verificar o sistema de ar condicionado.',
+        'Entendi! Problemas de ar condicionado são minha especialidade.',
+        'Deixe-me checar o equipamento de refrigeração.',
+      ],
+      'Injeção Eletrônica': [
+        'Vou fazer um diagnóstico no sistema de injeção.',
+        'Entendi! Vou verificar a injeção eletrônica.',
+        'Deixe-me checar o sistema de injeção eletrônica.',
+      ],
+      'Lataria e Pintura': [
+        'Vou avaliar o dano na lataria.',
+        'Entendi! Vou verificar a pintura e lataria.',
+        'Deixe-me analisar o reparo na lataria.',
+      ],
+      'Diagnóstico Eletrônico': [
+        'Vou fazer uma varredura eletrônica completa.',
+        'Entendi! Vou diagnosticar os sistemas eletrônicos.',
+        'Deixe-me conectar o scanner para diagnóstico.',
+      ],
+      'Revisão Completa': [
+        'Vou fazer uma revisão completa do veículo.',
+        'Entendi! Vou verificar todos os sistemas.',
+        'Deixe-me fazer uma inspeção completa.',
+      ],
+      'Troca de Fluidos': [
+        'Vou verificar e trocar os fluidos necessários.',
+        'Entendi! Vou checar os níveis de fluidos.',
+        'Deixe-me trocar os fluidos do sistema.',
+      ],
+      'Sistema de Direção': [
+        'Vou verificar o sistema de direção.',
+        'Entendi! Vou checar a geometria da direção.',
+        'Deixe-me analisar o sistema de direção.',
+      ],
+      default: [
+        'Entendi! Posso ajudar com isso.',
+        'Interessante! Vou verificar isso para você.',
+        'Obrigado pela informação. Como posso prosseguir?',
+        'Claro! Posso orientar você sobre isso.',
+        'Perfeito! Deixe-me pensar na melhor solução.',
+      ],
+    };
+
+    const mechanicResponses = responses[selectedMechanic.specialty as keyof typeof responses] || responses.default;
+    return mechanicResponses[Math.floor(Math.random() * mechanicResponses.length)];
   };
 
   return (
@@ -238,7 +334,10 @@ export default function Chat() {
           <View style={styles.chatHeader}>
             <TouchableOpacity
               style={styles.backButton}
-              onPress={() => setSelectedMechanic(null)}
+              onPress={() => {
+                setSelectedMechanic(null);
+                setMessages([]);
+              }}
             >
               <Ionicons name="arrow-back" size={24} color={colors.text} />
             </TouchableOpacity>
@@ -251,6 +350,12 @@ export default function Chat() {
                 </Text>
               </View>
             </View>
+            <TouchableOpacity
+              style={styles.changeMechanicButton}
+              onPress={() => setIsModalVisible(true)}
+            >
+              <Ionicons name="people" size={24} color={colors.primary} />
+            </TouchableOpacity>
           </View>
 
           {/* Lista de mensagens */}
@@ -261,6 +366,13 @@ export default function Chat() {
             renderItem={({ item }) => <ChatBubble message={item} />}
             contentContainerStyle={styles.messagesList}
             showsVerticalScrollIndicator={false}
+            ListFooterComponent={
+              isTyping ? (
+                <View style={styles.typingIndicator}>
+                  <Text style={styles.typingText}>🤔 {selectedMechanic?.name} está digitando...</Text>
+                </View>
+              ) : null
+            }
           />
 
           {/* Input de mensagem */}
