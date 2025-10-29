@@ -12,11 +12,12 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import colors from '../../../theme/colors'
 import { JSX } from 'react'
+import { useViewMode } from '../../../../context/ViewModeContext'
 
 type TabIconProps = {
   color: string
   focused: boolean
-  
+
 }
 
 type CustomTabBarButtonProps = {
@@ -34,11 +35,21 @@ export default function TabLayout() {
       <FontAwesome name={name} size={24} color={focused ? colors.primary : color} />
     )
 
-    const CustomTabBarButton = ({ onPress, children }: CustomTabBarButtonProps) => (
-      <TouchableOpacity style={styles.plusButton} onPress={onPress}>
+
+  const { mode } = useViewMode();
+
+
+  const CustomTabBarButton = ({ onPress, children }: CustomTabBarButtonProps) => (
+    <TouchableOpacity style={styles.plusButton} onPress={onPress}>
+      {mode === 'mechanic' ? (
+        // QR code icon for mechanic mode
+        <FontAwesome name="qrcode" size={28} color={colors.background} />
+      ) : (
+        // Car icon for normal mode
         <FontAwesome name="car" size={28} color={colors.background} />
-      </TouchableOpacity>
-    )
+      )}
+    </TouchableOpacity>
+  )
 
   return (
     <Tabs
@@ -56,9 +67,9 @@ export default function TabLayout() {
     >
       <Tabs.Screen name="dashboard/index" options={{ tabBarIcon: renderIcon('home') }} />
       <Tabs.Screen name="store/index" options={{ tabBarIcon: renderIcon('shopping-cart') }} />
-  <Tabs.Screen name="plus/index" options={{ tabBarButton: (props) => <CustomTabBarButton {...props} /> }} />      
-  <Tabs.Screen name="chat/index" options={{ tabBarIcon: renderIcon('comment') }} />
-  <Tabs.Screen name="settings/index" options={{ tabBarIcon: renderIcon('cog') }} />
+      <Tabs.Screen name="plus/index" options={{ tabBarButton: (props) => <CustomTabBarButton {...props} /> }} />
+      <Tabs.Screen name="chat/index" options={{ tabBarIcon: renderIcon('comment') }} />
+      <Tabs.Screen name="settings/index" options={{ tabBarIcon: renderIcon('cog') }} />
 
       {/* rotas que nao devem aparecer na navbar */}
       <Tabs.Screen name="dashboard/styles" options={{ href: null }} />
@@ -94,6 +105,6 @@ const styles = StyleSheet.create({
     color: colors.background,
     fontSize: 30,
     fontWeight: 'bold',
-    marginTop: -2, 
+    marginTop: -2,
   },
 })

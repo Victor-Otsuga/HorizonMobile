@@ -12,6 +12,8 @@ import {
   Platform,
   Image,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import colors from '../../../../theme/colors';
 import styles from './styles';
 import { Ionicons } from '@expo/vector-icons';
@@ -30,6 +32,12 @@ interface Mechanic {
   avatar: string;
   isOnline: boolean;
   specialty: string;
+}
+
+interface Conversation {
+  mechanic: Mechanic;
+  lastMessage: Message;
+  unreadCount: number;
 }
 
 // Mock de mecânicos - Lista expandida com mais exemplos
@@ -106,13 +114,63 @@ const MOCK_MECHANICS: Mechanic[] = [
   },
 ];
 
+// Função para formatar timestamp
+const formatTime = (timestamp: string) => {
+  const date = new Date(timestamp);
+  const now = new Date();
+  const diffTime = now.getTime() - date.getTime();
+  const diffDays = diffTime / (1000 * 60 * 60 * 24);
+
+  if (diffDays < 1) {
+    return date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  } else if (diffDays < 7) {
+    return date.toLocaleDateString('pt-BR', { weekday: 'short' });
+  } else {
+    return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+  }
+};
+
+// Componente de item de conversa
+const ConversationItem = ({ 
+  conversation, 
+  onPress 
+}: { 
+  conversation: Conversation; 
+  onPress: () => void;
+}) => {
+  const lastMessage = conversation.lastMessage;
+  const preview = lastMessage.text.length > 50 
+    ? lastMessage.text.substring(0, 50) + '...' 
+    : lastMessage.text;
+
+  return (
+    <TouchableOpacity style={styles.conversationItem} onPress={onPress}>
+      <View style={styles.conversationAvatarContainer}>
+        <Image source={{ uri: conversation.mechanic.avatar }} style={styles.conversationAvatar} />
+        {conversation.mechanic.isOnline && <View style={styles.onlineIndicatorAbsolute} />}
+      </View>
+      <View style={styles.conversationContent}>
+        <View style={styles.conversationHeader}>
+          <Text style={styles.conversationName}>{conversation.mechanic.name}</Text>
+          <Text style={styles.conversationTime}>{formatTime(lastMessage.timestamp)}</Text>
+        </View>
+        <View style={styles.conversationFooter}>
+          <Text style={styles.conversationPreview} numberOfLines={1}>
+            {lastMessage.isMe ? 'Você: ' : ''}{preview}
+          </Text>
+          {conversation.unreadCount > 0 && (
+            <View style={styles.unreadBadge}>
+              <Text style={styles.unreadText}>{conversation.unreadCount}</Text>
+            </View>
+          )}
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+};
+
 // Componente de balão de mensagem
 const ChatBubble = ({ message }: { message: Message }) => {
-  const formatTime = (timestamp: string) => {
-    const date = new Date(timestamp);
-    return date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-  };
-
   return (
     <View
       style={[
@@ -196,12 +254,77 @@ const MechanicSelector = ({
 };
 
 export default function Chat() {
+  const insets = useSafeAreaInsets();
   const [selectedMechanic, setSelectedMechanic] = useState<Mechanic | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
   const flatListRef = useRef<FlatList>(null);
+
+  // Função para salvar mensagens no storage
+  const saveMessages = async (mechanicId: string, messagesToSave: Message[]) => {
+    try {
+      await AsyncStorage.setItem(`chat_${mechanicId}`, JSON.stringify(messagesToSave));
+    } catch (error) {
+      console.error('Erro ao salvar mensagens:', error);
+    }
+  };
+
+  // Função para carregar mensagens do storage
+  const loadMessages = async (mechanicId: string) => {
+    try {
+      const storedMessages = await AsyncStorage.getItem(`chat_${mechanicId}`);
+      if (storedMessages) {
+        return JSON.parse(storedMessages);
+      }
+      return null;
+    } catch (error) {
+      console.error('Erro ao carregar mensagens:', error);
+      return null;
+    }
+  };
+
+  // Função para carregar todas as conversas
+  const loadConversations = async () => {
+    try {
+      const conversationsList: Conversation[] = [];
+      
+      for (const mechanic of MOCK_MECHANICS) {
+        const messages = await loadMessages(mechanic.id);
+        if (messages && messages.length > 0) {
+          const lastMessage = messages[messages.length - 1];
+          conversationsList.push({
+            mechanic,
+            lastMessage,
+            unreadCount: 0,
+          });
+        }
+      }
+      
+      // Ordenar por timestamp mais recente
+      conversationsList.sort((a, b) => 
+        new Date(b.lastMessage.timestamp).getTime() - new Date(a.lastMessage.timestamp).getTime()
+      );
+      
+      setConversations(conversationsList);
+    } catch (error) {
+      console.error('Erro ao carregar conversas:', error);
+    }
+  };
+
+  // Carregar conversas ao montar o componente
+  useEffect(() => {
+    loadConversations();
+  }, []);
+
+  // Atualizar lista de conversas quando voltar para tela principal
+  useEffect(() => {
+    if (!selectedMechanic) {
+      loadConversations();
+    }
+  }, [selectedMechanic]);
 
   // Scroll automático para a última mensagem
   useEffect(() => {
@@ -212,17 +335,39 @@ export default function Chat() {
     }
   }, [messages]);
 
+  // Salvar mensagens sempre que mudarem
+  useEffect(() => {
+    if (selectedMechanic && messages.length > 0) {
+      saveMessages(selectedMechanic.id, messages);
+    }
+  }, [messages, selectedMechanic]);
+
   // Selecionar mecânico e carregar conversa inicial
-  const handleSelectMechanic = (mechanic: Mechanic) => {
+  const handleSelectMechanic = async (mechanic: Mechanic) => {
     setSelectedMechanic(mechanic);
-    // Mensagem inicial de boas-vindas
-    const welcomeMessage: Message = {
-      id: Date.now().toString(),
-      text: `Olá! Sou ${mechanic.name}. Como posso ajudar você hoje?`,
-      timestamp: new Date().toISOString(),
-      isMe: false,
-    };
-    setMessages([welcomeMessage]);
+    
+    // Tentar carregar mensagens salvas
+    const savedMessages = await loadMessages(mechanic.id);
+    
+    if (savedMessages && savedMessages.length > 0) {
+      setMessages(savedMessages);
+    } else {
+      // Mensagem inicial de boas-vindas
+      const welcomeMessage: Message = {
+        id: Date.now().toString(),
+        text: `Olá! Sou ${mechanic.name}. Como posso ajudar você hoje?`,
+        timestamp: new Date().toISOString(),
+        isMe: false,
+      };
+      setMessages([welcomeMessage]);
+    }
+  };
+
+  // Função para voltar à lista de conversas
+  const handleBackToConversations = () => {
+    setSelectedMechanic(null);
+    setMessages([]);
+    loadConversations();
   };
 
   // Enviar mensagem
@@ -334,10 +479,7 @@ export default function Chat() {
           <View style={styles.chatHeader}>
             <TouchableOpacity
               style={styles.backButton}
-              onPress={() => {
-                setSelectedMechanic(null);
-                setMessages([]);
-              }}
+              onPress={handleBackToConversations}
             >
               <Ionicons name="arrow-back" size={24} color={colors.text} />
             </TouchableOpacity>
@@ -376,7 +518,7 @@ export default function Chat() {
           />
 
           {/* Input de mensagem */}
-          <View style={styles.inputContainer}>
+          <View style={[styles.inputContainer, { bottom: 70 + insets.bottom }]}>
             <TextInput
               style={styles.input}
               value={inputText}
@@ -400,24 +542,46 @@ export default function Chat() {
           </View>
         </KeyboardAvoidingView>
       ) : (
-        <View style={styles.emptyState}>
-          <View style={styles.emptyStateIcon}>
-            <Ionicons name="chatbubbles-outline" size={80} color={colors.textLight} />
+        <>
+          <View style={styles.conversationsHeader}>
+            <Text style={styles.conversationsHeaderText}>Conversas</Text>
           </View>
-          <Text style={styles.emptyStateTitle}>Selecione um mecânico</Text>
-          <Text style={styles.emptyStateText}>
-            Toque no botão abaixo para iniciar uma conversa com um mecânico disponível
-          </Text>
-        </View>
+          {conversations.length > 0 ? (
+            <FlatList
+              data={conversations}
+              keyExtractor={(item) => item.mechanic.id}
+              renderItem={({ item }) => (
+                <ConversationItem
+                  conversation={item}
+                  onPress={() => handleSelectMechanic(item.mechanic)}
+                />
+              )}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={styles.conversationsList}
+            />
+          ) : (
+            <View style={styles.emptyState}>
+              <View style={styles.emptyStateIcon}>
+                <Ionicons name="chatbubbles-outline" size={80} color={colors.textLight} />
+              </View>
+              <Text style={styles.emptyStateTitle}>Nenhuma conversa ainda</Text>
+              <Text style={styles.emptyStateText}>
+                Toque no botão abaixo para iniciar uma conversa com um mecânico disponível
+              </Text>
+            </View>
+          )}
+        </>
       )}
 
-      {/* Botão flutuante */}
-      <TouchableOpacity
-        style={styles.fab}
-        onPress={() => setIsModalVisible(true)}
-      >
-        <Ionicons name="chatbubble" size={28} color="#fff" />
-      </TouchableOpacity>
+      {/* Botão flutuante - só mostra quando não há chat ativo */}
+      {!selectedMechanic && (
+        <TouchableOpacity
+          style={styles.fab}
+          onPress={() => setIsModalVisible(true)}
+        >
+          <Ionicons name="chatbubble" size={28} color="#fff" />
+        </TouchableOpacity>
+      )}
 
       {/* Modal de seleção de mecânico */}
       <MechanicSelector

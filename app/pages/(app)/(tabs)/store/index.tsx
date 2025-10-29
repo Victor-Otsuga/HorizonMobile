@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useViewMode } from '../../../../../context/ViewModeContext';
 
@@ -48,7 +48,7 @@ const stores = [
   },
   {
     id: '4',
-    name: 'Tecpolish ',  
+    name: 'Tecpolish ',
     rating: 4.4,
     reviews: 85,
     image: 'p5',
@@ -63,7 +63,7 @@ const partners = [
     reviews: 320,
     image: 'p6',
   },
-  { 
+  {
     id: '2',
     name: 'AutoPlus',
     rating: 4.7,
@@ -80,7 +80,7 @@ const partners = [
   {
     id: '4',
     name: 'Mecânica Rápida',
-    rating: 4.5,  
+    rating: 4.5,
     reviews: 140,
     image: 'p9',
   },
@@ -103,25 +103,120 @@ export default function Store() {
   };
   if (mode === 'mechanic') {
     const parts = [
-      { id: 'a1', name: 'Filtro de óleo - Rede Ancora', price: 'R$ 45,00' },
-      { id: 'a2', name: 'Pastilha de freio - Rede Ancora', price: 'R$ 120,00' },
-      { id: 'a3', name: 'Amortecedor dianteiro - Rede Ancora', price: 'R$ 380,00' },
+      { id: 'a1', name: 'Filtro de óleo', price: 45, image: require('../../../../../assets/filtro_oleo.png'), discount: 10 },
+      { id: 'a2', name: 'Pastilha de freio', price: 120, image: require('../../../../../assets/pastilha_freio.png'), discount: 0 },
+      { id: 'a3', name: 'Amortecedor dianteiro', price: 380, image: require('../../../../../assets/amortecedor.png'), discount: 15 },
+      { id: 'a4', name: 'Velas de ignição', price: 60, image: require('../../../../../assets/vela.png'), discount: 5 },
+      { id: 'a5', name: 'Bateria 12V', price: 450, image: require('../../../../../assets/bateria.png'), discount: 20 },
     ];
 
+    // Produtos em promoção
+    const discountedParts = parts.filter(p => p.discount > 0);
+
     return (
-      <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 100 }}>
-        <View style={styles.container}>
-          <Text style={{ fontSize: 22, fontWeight: '700', marginBottom: 12 }}>Marketplace - Rede Ancora</Text>
-          {parts.map(p => (
-            <View key={p.id} style={{ padding: 12, backgroundColor: '#fff', marginBottom: 8, borderRadius: 8 }}>
-              <Text style={{ fontWeight: '700' }}>{p.name}</Text>
-              <Text style={{ color: '#666' }}>{p.price}</Text>
+      <ScrollView style={{ flex: 1, paddingTop: 20, backgroundColor: '#f5f5f5' }} contentContainerStyle={{ padding: 16, paddingBottom: 100 }}>
+        <Text style={{ fontSize: 24, fontWeight: '700', marginBottom: 16 }}>Marketplace - Rede Ancora</Text>
+
+        {/* Seção de descontos */}
+        {discountedParts.length > 0 && (
+          <View style={{ marginBottom: 24 }}>
+            <Text style={{ fontSize: 20, fontWeight: '700', marginBottom: 12, color: '#FF3B30' }}>Descontos imperdíveis</Text>
+            {discountedParts.map(p => (
+              <View
+                key={p.id}
+                style={{
+                  flexDirection: 'row',
+                  backgroundColor: '#fff',
+                  borderRadius: 12,
+                  padding: 12,
+                  marginBottom: 12,
+                  alignItems: 'center',
+                  elevation: 2,
+                }}
+              >
+                <Image
+                  source={p.image}
+                  style={{ width: 64, height: 64, borderRadius: 8, marginRight: 12 }}
+                  resizeMode="contain"
+                />
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontWeight: '700', fontSize: 16 }}>{p.name}</Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
+                    <Text style={{ color: '#666', textDecorationLine: 'line-through', marginRight: 6 }}>
+                      R$ {p.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                    </Text>
+                    <Text style={{ color: '#28a745', fontWeight: '700' }}>
+                      R$ {(p.price * (1 - p.discount / 100)).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                    </Text>
+                  </View>
+                </View>
+                <TouchableOpacity
+                  style={{
+                    backgroundColor: '#007AFF',
+                    paddingVertical: 8,
+                    paddingHorizontal: 12,
+                    borderRadius: 8,
+                  }}
+                  onPress={() => Alert.alert(
+                    "Aviso", // título
+                    "Um vendedor entrará em contato via Whatsapp!", // mensagem
+                    [{ text: "OK" }] // botão(s) opcional
+                  )}
+                >
+                  <Text style={{ color: '#fff', fontWeight: '700' }}>Pedir</Text>
+                </TouchableOpacity>
+              </View>
+            ))}
+          </View>
+        )}
+
+        {/* Seção de produtos normais */}
+        <Text style={{ fontSize: 20, fontWeight: '700', marginBottom: 12 }}>Todos os produtos</Text>
+        {parts.map(p => (
+          <View
+            key={p.id}
+            style={{
+              flexDirection: 'row',
+              backgroundColor: '#fff',
+              borderRadius: 12,
+              padding: 12,
+              marginBottom: 12,
+              alignItems: 'center',
+              elevation: 2,
+            }}
+          >
+            <Image
+              source={p.image}
+              style={{ width: 64, height: 64, borderRadius: 8, marginRight: 12 }}
+              resizeMode="contain"
+            />
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontWeight: '700', fontSize: 16 }}>{p.name}</Text>
+              <Text style={{ color: '#28a745', fontWeight: '600', marginTop: 4 }}>
+                R$ {p.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+              </Text>
             </View>
-          ))}
-        </View>
+            <TouchableOpacity
+              style={{
+                backgroundColor: '#007AFF',
+                paddingVertical: 8,
+                paddingHorizontal: 12,
+                borderRadius: 8,
+              }}
+              onPress={() => aAlert.alert(
+                "Aviso", // título
+                "Um vendedor entrará em contato via Whatsapp!", // mensagem
+                [{ text: "OK" }] 
+              )}
+            >
+              <Text style={{ color: '#fff', fontWeight: '700' }}>Pedir</Text>
+            </TouchableOpacity>
+          </View>
+        ))}
       </ScrollView>
     );
   }
+
 
   return (
     <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 100 }}>
@@ -159,7 +254,7 @@ export default function Store() {
           showsHorizontalScrollIndicator={false}
         />
 
-         <View style={styles.sectionHeader}>
+        <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Oficinas parceiras</Text>
           <TouchableOpacity>
             <Text style={styles.seeAll}>Ver todas</Text>

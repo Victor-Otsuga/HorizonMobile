@@ -11,6 +11,7 @@ import {
   Alert,
   Linking,
   Platform,
+  ScrollView,
 } from 'react-native';
 import MapView, { Marker, Callout, PROVIDER_GOOGLE } from 'react-native-maps';
 import { useViewMode } from '../../../../../context/ViewModeContext';
@@ -203,21 +204,83 @@ export default function HorizonMap(): JSX.Element {
   };
 
   if (mode === 'mechanic') {
-    // mechanic overview
-    return (
-      <SafeAreaView style={{ flex: 1, padding: 16 }}>
-        <Text style={{ fontSize: 22, fontWeight: '700', marginBottom: 8 }}>Painel do Mecânico</Text>
-        <Text style={{ marginBottom: 6 }}>Serviços agendados hoje: 4</Text>
-        <Text style={{ marginBottom: 12 }}>Receita estimada: R$ 2.450,00</Text>
-        <View style={{ backgroundColor: '#fff', padding: 12, borderRadius: 10 }}>
-          <Text style={{ fontWeight: '700', marginBottom: 8 }}>Próximos atendimentos</Text>
-          <Text>09:00 - João - Troca de óleo</Text>
-          <Text>10:30 - Maria - Alinhamento</Text>
-          <Text>13:30 - Carlos - Freios</Text>
+  const appointments = [
+    { time: '09:00', client: 'João', service: 'Troca de óleo', price: 180 },
+    { time: '10:30', client: 'Maria', service: 'Alinhamento', price: 120 },
+    { time: '12:00', client: 'Pedro', service: 'Revisão geral', price: 350 },
+    { time: '13:30', client: 'Carlos', service: 'Freios', price: 200 },
+  ];
+
+  const totalRevenue = appointments.reduce((sum, a) => sum + a.price, 0);
+
+  return (
+    <SafeAreaView style={{ flex: 1, padding: 16, paddingTop:39, backgroundColor: '#f5f5f5' }}>
+      <Text style={{ fontSize: 26, fontWeight: '700', marginBottom: 16 }}>Painel do Mecânico</Text>
+
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 16 }}>
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: '#fff',
+            padding: 16,
+            borderRadius: 12,
+            marginRight: 8,
+            elevation: 3,
+          }}
+        >
+          <Text style={{ fontSize: 16, fontWeight: '600', marginBottom: 4 }}>Serviços hoje</Text>
+          <Text style={{ fontSize: 20, fontWeight: '700', color: '#007AFF' }}>{appointments.length}</Text>
         </View>
-      </SafeAreaView>
-    );
-  }
+
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: '#fff',
+            padding: 16,
+            borderRadius: 12,
+            marginLeft: 8,
+            elevation: 3,
+          }}
+        >
+          <Text style={{ fontSize: 16, fontWeight: '600', marginBottom: 4 }}>Receita estimada</Text>
+          <Text style={{ fontSize: 20, fontWeight: '700', color: '#28a745' }}>
+            R$ {totalRevenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+          </Text>
+        </View>
+      </View>
+
+      <Text style={{ fontSize: 20, fontWeight: '700', marginBottom: 12 }}>Próximos atendimentos</Text>
+
+      <ScrollView>
+        {appointments.map((a, index) => (
+          <View
+            key={index}
+            style={{
+              backgroundColor: '#fff',
+              padding: 16,
+              borderRadius: 12,
+              marginBottom: 12,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              elevation: 2,
+            }}
+          >
+            <View>
+              <Text style={{ fontWeight: '700', fontSize: 16 }}>{a.client}</Text>
+              <Text style={{ color: '#555' }}>{a.service}</Text>
+            </View>
+            <View style={{ alignItems: 'flex-end' }}>
+              <Text style={{ fontWeight: '700', fontSize: 16 }}>{a.time}</Text>
+              <Text style={{ color: '#28a745', fontWeight: '600' }}>R$ {a.price}</Text>
+            </View>
+          </View>
+        ))}
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
 
   return (
     <SafeAreaView style={styles.container}>

@@ -4,10 +4,13 @@ import colors from '../../../../theme/colors';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingBottom: 0,
+    paddingTop: 30,
     backgroundColor: colors.background,
   },
   chatContainer: {
     flex: 1,
+    paddingBottom: 80,
   },
   chatHeader: {
     flexDirection: 'row',
@@ -49,7 +52,7 @@ const styles = StyleSheet.create({
   },
   messagesList: {
     padding: 16,
-    paddingBottom: 8,
+    paddingBottom: 120,
   },
   chatBubble: {
     maxWidth: '75%',
@@ -104,6 +107,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderTopWidth: 1,
     borderTopColor: colors.border,
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 5,
   },
   input: {
     flex: 1,
@@ -154,7 +165,7 @@ const styles = StyleSheet.create({
   fab: {
     position: 'absolute',
     right: 20,
-    bottom: 20,
+    bottom: 100,
     width: 60,
     height: 60,
     borderRadius: 30,
@@ -166,9 +177,11 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 6,
+  
   },
   modalOverlay: {
     flex: 1,
+
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContent: {
@@ -253,6 +266,95 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: colors.primary,
     fontWeight: '600',
+  },
+  conversationsList: {
+    paddingBottom: 100,
+  },
+  conversationsHeader: {
+    paddingHorizontal: 16,
+    paddingTop: 20,
+    paddingBottom: 12,
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  conversationsHeaderText: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: colors.text,
+  },
+  conversationItem: {
+    flexDirection: 'row',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+    alignItems: 'center',
+  },
+  conversationAvatarContainer: {
+    position: 'relative',
+    marginRight: 12,
+  },
+  conversationAvatar: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+  },
+  onlineIndicatorAbsolute: {
+    position: 'absolute',
+    bottom: 2,
+    right: 2,
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: colors.Green,
+    borderWidth: 2,
+    borderColor: '#fff',
+  },
+  conversationContent: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  conversationHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  conversationName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  conversationTime: {
+    fontSize: 13,
+    color: colors.textLight,
+  },
+  conversationFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  conversationPreview: {
+    fontSize: 14,
+    color: colors.textLight,
+    flex: 1,
+    marginRight: 8,
+  },
+  unreadBadge: {
+    minWidth: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: colors.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 6,
+  },
+  unreadText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#fff',
   },
 });
 
