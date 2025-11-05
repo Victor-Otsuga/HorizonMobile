@@ -1,4 +1,4 @@
-package com.anonymous.HorizonMobile
+package com.victorotsugq.HorizonMobile
 
 import android.app.Application
 import android.content.res.Configuration

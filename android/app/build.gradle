@@ -87,9 +87,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.anonymous.HorizonMobile'
+    namespace 'com.victorotsugq.HorizonMobile'
     defaultConfig {
-        applicationId 'com.anonymous.HorizonMobile'
+        applicationId 'com.victorotsugq.HorizonMobile'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

@@ -9,17 +9,20 @@
       "favicon": "./assets/favicon.png",
       "bundler": "metro"
     },
-<<<<<<< HEAD
     "extra": {
       "eas": {
         "projectId": "dde555e6-fd9d-4274-a0a5-35c497975909"
       }
-    }
-=======
+    },
     "plugins": [
       "expo-router",
       "expo-font"
-    ]
->>>>>>> refs/remotes/origin/master
+    ],
+    "android": {
+      "package": "com.victorotsugq.HorizonMobile"
+    },
+    "ios": {
+      "bundleIdentifier": "com.victorotsugq.HorizonMobile"
+    }
   }
 }
