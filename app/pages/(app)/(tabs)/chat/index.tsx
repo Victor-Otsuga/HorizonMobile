@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useViewMode } from '../../../../../context/ViewModeContext';
 import colors from '../../../../theme/colors';
 import styles from './styles';
 import { Ionicons } from '@expo/vector-icons';
@@ -34,11 +35,68 @@ interface Mechanic {
   specialty: string;
 }
 
+interface User {
+  id: string;
+  name: string;
+  avatar: string;
+  isOnline: boolean;
+  vehicle?: string;
+}
+
 interface Conversation {
-  mechanic: Mechanic;
+  contact: Mechanic | User;
   lastMessage: Message;
   unreadCount: number;
+  isAI?: boolean;
 }
+
+// IA Assistant
+const AI_ASSISTANT: Mechanic = {
+  id: 'ai_assistant',
+  name: 'Assistente IA',
+  avatar: 'https://cdn-icons-png.flaticon.com/512/4712/4712109.png',
+  isOnline: true,
+  specialty: 'Assistente Virtual',
+};
+
+// Mock de usuários
+const MOCK_USERS: User[] = [
+  {
+    id: 'u1',
+    name: 'Carlos Mendes',
+    avatar: 'https://randomuser.me/api/portraits/men/11.jpg',
+    isOnline: true,
+    vehicle: 'Honda Civic 2020',
+  },
+  {
+    id: 'u2',
+    name: 'Ana Paula',
+    avatar: 'https://randomuser.me/api/portraits/women/12.jpg',
+    isOnline: true,
+    vehicle: 'Toyota Corolla 2019',
+  },
+  {
+    id: 'u3',
+    name: 'Roberto Alves',
+    avatar: 'https://randomuser.me/api/portraits/men/13.jpg',
+    isOnline: false,
+    vehicle: 'Ford Focus 2021',
+  },
+  {
+    id: 'u4',
+    name: 'Juliana Costa',
+    avatar: 'https://randomuser.me/api/portraits/women/14.jpg',
+    isOnline: true,
+    vehicle: 'Volkswagen Gol 2018',
+  },
+  {
+    id: 'u5',
+    name: 'Felipe Santos',
+    avatar: 'https://randomuser.me/api/portraits/men/15.jpg',
+    isOnline: true,
+    vehicle: 'Chevrolet Onix 2022',
+  },
+];
 
 // Mock de mecânicos - Lista expandida com mais exemplos
 const MOCK_MECHANICS: Mechanic[] = [
@@ -142,16 +200,18 @@ const ConversationItem = ({
   const preview = lastMessage.text.length > 50 
     ? lastMessage.text.substring(0, 50) + '...' 
     : lastMessage.text;
+  const contact = conversation.contact;
+  const isMechanic = 'specialty' in contact;
 
   return (
     <TouchableOpacity style={styles.conversationItem} onPress={onPress}>
       <View style={styles.conversationAvatarContainer}>
-        <Image source={{ uri: conversation.mechanic.avatar }} style={styles.conversationAvatar} />
-        {conversation.mechanic.isOnline && <View style={styles.onlineIndicatorAbsolute} />}
+        <Image source={{ uri: contact.avatar }} style={styles.conversationAvatar} />
+        {contact.isOnline && <View style={styles.onlineIndicatorAbsolute} />}
       </View>
       <View style={styles.conversationContent}>
         <View style={styles.conversationHeader}>
-          <Text style={styles.conversationName}>{conversation.mechanic.name}</Text>
+          <Text style={styles.conversationName}>{contact.name}</Text>
           <Text style={styles.conversationTime}>{formatTime(lastMessage.timestamp)}</Text>
         </View>
         <View style={styles.conversationFooter}>
@@ -193,59 +253,66 @@ const ChatBubble = ({ message }: { message: Message }) => {
   );
 };
 
-// Componente de seleção de mecânico
-const MechanicSelector = ({
-  mechanics,
+// Componente de seleção de contato
+const ContactSelector = ({
+  contacts,
   onSelect,
   visible,
   onClose,
+  title,
 }: {
-  mechanics: Mechanic[];
-  onSelect: (mechanic: Mechanic) => void;
+  contacts: (Mechanic | User)[];
+  onSelect: (contact: Mechanic | User) => void;
   visible: boolean;
   onClose: () => void;
+  title: string;
 }) => {
   return (
     <Modal visible={visible} animationType="slide" transparent>
       <SafeAreaView style={styles.modalOverlay}>
         <View style={styles.modalContent}>
           <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>Selecione um mecânico</Text>
+            <Text style={styles.modalTitle}>{title}</Text>
             <TouchableOpacity onPress={onClose}>
               <Ionicons name="close" size={28} color={colors.text} />
             </TouchableOpacity>
           </View>
 
           <FlatList
-            data={mechanics}
+            data={contacts}
             keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                style={styles.mechanicCard}
-                onPress={() => {
-                  onSelect(item);
-                  onClose();
-                }}
-              >
-                <View style={styles.mechanicAvatarContainer}>
-                  <Image source={{ uri: item.avatar }} style={styles.mechanicAvatar} />
-                  <View
-                    style={[
-                      styles.onlineIndicator,
-                      item.isOnline ? styles.onlineIndicatorActive : styles.onlineIndicatorInactive,
-                    ]}
-                  />
-                </View>
-                <View style={styles.mechanicInfo}>
-                  <Text style={styles.mechanicName}>{item.name}</Text>
-                  <Text style={styles.mechanicSpecialty}>{item.specialty}</Text>
-                </View>
-                <TouchableOpacity style={styles.startChatButton}>
-                  <Ionicons name="chatbubble" size={20} color={colors.primary} />
-                  <Text style={styles.startChatText}>Iniciar conversa</Text>
+            renderItem={({ item }) => {
+              const isMechanic = 'specialty' in item;
+              return (
+                <TouchableOpacity
+                  style={styles.mechanicCard}
+                  onPress={() => {
+                    onSelect(item);
+                    onClose();
+                  }}
+                >
+                  <View style={styles.mechanicAvatarContainer}>
+                    <Image source={{ uri: item.avatar }} style={styles.mechanicAvatar} />
+                    <View
+                      style={[
+                        styles.onlineIndicator,
+                        item.isOnline ? styles.onlineIndicatorActive : styles.onlineIndicatorInactive,
+                      ]}
+                    />
+                  </View>
+                  <View style={styles.mechanicInfo}>
+                    <Text style={styles.mechanicName}>{item.name}</Text>
+                    <Text style={styles.mechanicSpecialty}>
+                      {isMechanic ? item.specialty : item.vehicle}
+                    </Text>
+                  </View>
+                  <TouchableOpacity style={styles.startChatButton}>
+                    <Ionicons name="chatbubble" size={20} color={colors.primary} />
+                    <Text style={styles.startChatText}>Iniciar conversa</Text>
+                  </TouchableOpacity>
                 </TouchableOpacity>
-              </TouchableOpacity>
-            )}
+              );
+            }}
           />
         </View>
       </SafeAreaView>
@@ -255,13 +322,19 @@ const MechanicSelector = ({
 
 export default function Chat() {
   const insets = useSafeAreaInsets();
-  const [selectedMechanic, setSelectedMechanic] = useState<Mechanic | null>(null);
+  const { mode } = useViewMode();
+  const [selectedContact, setSelectedContact] = useState<Mechanic | User | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const flatListRef = useRef<FlatList>(null);
+  
+  // Determinar lista de contatos baseado no modo
+  const getContacts = (): (Mechanic | User)[] => {
+    return mode === 'mechanic' ? MOCK_USERS : MOCK_MECHANICS;
+  };
 
   // Função para salvar mensagens no storage
   const saveMessages = async (mechanicId: string, messagesToSave: Message[]) => {
@@ -290,17 +363,31 @@ export default function Chat() {
   const loadConversations = async () => {
     try {
       const conversationsList: Conversation[] = [];
+      const contacts = getContacts();
       
-      for (const mechanic of MOCK_MECHANICS) {
-        const messages = await loadMessages(mechanic.id);
+      // Carregar conversas com contatos
+      for (const contact of contacts) {
+        const messages = await loadMessages(contact.id);
         if (messages && messages.length > 0) {
           const lastMessage = messages[messages.length - 1];
           conversationsList.push({
-            mechanic,
+            contact,
             lastMessage,
             unreadCount: 0,
           });
         }
+      }
+      
+      // Carregar conversa com IA
+      const aiMessages = await loadMessages(AI_ASSISTANT.id);
+      if (aiMessages && aiMessages.length > 0) {
+        const lastMessage = aiMessages[aiMessages.length - 1];
+        conversationsList.push({
+          contact: AI_ASSISTANT,
+          lastMessage,
+          unreadCount: 0,
+          isAI: true,
+        });
       }
       
       // Ordenar por timestamp mais recente
@@ -319,12 +406,12 @@ export default function Chat() {
     loadConversations();
   }, []);
 
-  // Atualizar lista de conversas quando voltar para tela principal
+  // Atualizar lista de conversas quando voltar para tela principal ou mudar modo
   useEffect(() => {
-    if (!selectedMechanic) {
+    if (!selectedContact) {
       loadConversations();
     }
-  }, [selectedMechanic]);
+  }, [selectedContact, mode]);
 
   // Scroll automático para a última mensagem
   useEffect(() => {
@@ -337,25 +424,49 @@ export default function Chat() {
 
   // Salvar mensagens sempre que mudarem
   useEffect(() => {
-    if (selectedMechanic && messages.length > 0) {
-      saveMessages(selectedMechanic.id, messages);
+    if (selectedContact && messages.length > 0) {
+      saveMessages(selectedContact.id, messages);
     }
-  }, [messages, selectedMechanic]);
+  }, [messages, selectedContact]);
 
-  // Selecionar mecânico e carregar conversa inicial
-  const handleSelectMechanic = async (mechanic: Mechanic) => {
-    setSelectedMechanic(mechanic);
+  // Selecionar contato e carregar conversa inicial
+  const handleSelectContact = async (contact: Mechanic | User) => {
+    setSelectedContact(contact);
     
     // Tentar carregar mensagens salvas
-    const savedMessages = await loadMessages(mechanic.id);
+    const savedMessages = await loadMessages(contact.id);
     
     if (savedMessages && savedMessages.length > 0) {
       setMessages(savedMessages);
     } else {
       // Mensagem inicial de boas-vindas
+      const isMechanic = 'specialty' in contact;
+      const welcomeText = isMechanic 
+        ? `Olá! Sou ${contact.name}. Como posso ajudar você hoje?`
+        : `Olá! Sou ${contact.name}. Preciso de ajuda com meu veículo.`;
+      
       const welcomeMessage: Message = {
         id: Date.now().toString(),
-        text: `Olá! Sou ${mechanic.name}. Como posso ajudar você hoje?`,
+        text: welcomeText,
+        timestamp: new Date().toISOString(),
+        isMe: false,
+      };
+      setMessages([welcomeMessage]);
+    }
+  };
+
+  // Iniciar chat com IA
+  const handleStartAIChat = async () => {
+    setSelectedContact(AI_ASSISTANT);
+    
+    const savedMessages = await loadMessages(AI_ASSISTANT.id);
+    
+    if (savedMessages && savedMessages.length > 0) {
+      setMessages(savedMessages);
+    } else {
+      const welcomeMessage: Message = {
+        id: Date.now().toString(),
+        text: 'Olá! Sou seu Assistente IA. Como posso ajudar você hoje?',
         timestamp: new Date().toISOString(),
         isMe: false,
       };
@@ -365,14 +476,14 @@ export default function Chat() {
 
   // Função para voltar à lista de conversas
   const handleBackToConversations = () => {
-    setSelectedMechanic(null);
+    setSelectedContact(null);
     setMessages([]);
     loadConversations();
   };
 
   // Enviar mensagem
   const handleSendMessage = () => {
-    if (!inputText.trim() || !selectedMechanic) return;
+    if (!inputText.trim() || !selectedContact) return;
 
     const newMessage: Message = {
       id: Date.now().toString(),
@@ -387,7 +498,7 @@ export default function Chat() {
     // Mostrar indicador de digitação
     setIsTyping(true);
 
-    // Simular resposta automática do mecânico após 2 segundos
+    // Simular resposta automática após 2 segundos
     setTimeout(() => {
       setIsTyping(false);
       const responseMessage: Message = {
@@ -400,9 +511,30 @@ export default function Chat() {
     }, 2000);
   };
 
-  // Gerar resposta automática simulada baseada na especialidade do mecânico
+  // Gerar resposta automática simulada
   const generateAutoResponse = (): string => {
-    if (!selectedMechanic) return 'Posso ajudar com isso.';
+    if (!selectedContact) return 'Posso ajudar com isso.';
+    
+    // Resposta da IA
+    if (selectedContact.id === AI_ASSISTANT.id) {
+      const aiResponses = [
+        'Entendi! Como posso ajudar você com isso?',
+        'Interessante! Deixe-me pensar na melhor solução.',
+        'Claro! Posso orientar você sobre isso.',
+        'Perfeito! Vou verificar isso para você.',
+        'Compreendo. Vamos resolver isso juntos!',
+      ];
+      return aiResponses[Math.floor(Math.random() * aiResponses.length)];
+    }
+    
+    // Se for usuário, não gera resposta automática
+    if ('vehicle' in selectedContact) {
+      return 'Obrigado pela mensagem! Vou responder em breve.';
+    }
+    
+    // Resposta do mecânico baseada na especialidade
+    const isMechanic = 'specialty' in selectedContact;
+    if (!isMechanic) return 'Posso ajudar com isso.';
     
     const responses = {
       'Motor e Transmissão': [
@@ -464,13 +596,13 @@ export default function Chat() {
       ],
     };
 
-    const mechanicResponses = responses[selectedMechanic.specialty as keyof typeof responses] || responses.default;
+    const mechanicResponses = responses[(selectedContact as Mechanic).specialty as keyof typeof responses] || responses.default;
     return mechanicResponses[Math.floor(Math.random() * mechanicResponses.length)];
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      {selectedMechanic ? (
+      {selectedContact ? (
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={styles.chatContainer}
@@ -484,11 +616,15 @@ export default function Chat() {
               <Ionicons name="arrow-back" size={24} color={colors.text} />
             </TouchableOpacity>
             <View style={styles.chatHeaderInfo}>
-              <Image source={{ uri: selectedMechanic.avatar }} style={styles.headerAvatar} />
+              <Image source={{ uri: selectedContact.avatar }} style={styles.headerAvatar} />
               <View>
-                <Text style={styles.headerName}>{selectedMechanic.name}</Text>
+                <Text style={styles.headerName}>{selectedContact.name}</Text>
                 <Text style={styles.headerStatus}>
-                  {selectedMechanic.isOnline ? '🟢 Online' : '⚪ Offline'}
+                  {selectedContact.id === AI_ASSISTANT.id 
+                    ? '🤖 Assistente IA' 
+                    : selectedContact.isOnline 
+                    ? '🟢 Online' 
+                    : '⚪ Offline'}
                 </Text>
               </View>
             </View>
@@ -511,7 +647,9 @@ export default function Chat() {
             ListFooterComponent={
               isTyping ? (
                 <View style={styles.typingIndicator}>
-                  <Text style={styles.typingText}>🤔 {selectedMechanic?.name} está digitando...</Text>
+                  <Text style={styles.typingText}>
+                    🤔 {selectedContact?.id === AI_ASSISTANT.id ? 'Assistente IA' : selectedContact?.name} está digitando...
+                  </Text>
                 </View>
               ) : null
             }
@@ -549,11 +687,11 @@ export default function Chat() {
           {conversations.length > 0 ? (
             <FlatList
               data={conversations}
-              keyExtractor={(item) => item.mechanic.id}
+              keyExtractor={(item) => item.contact.id}
               renderItem={({ item }) => (
                 <ConversationItem
                   conversation={item}
-                  onPress={() => handleSelectMechanic(item.mechanic)}
+                  onPress={() => handleSelectContact(item.contact)}
                 />
               )}
               showsVerticalScrollIndicator={false}
@@ -573,22 +711,34 @@ export default function Chat() {
         </>
       )}
 
-      {/* Botão flutuante - só mostra quando não há chat ativo */}
-      {!selectedMechanic && (
-        <TouchableOpacity
-          style={styles.fab}
-          onPress={() => setIsModalVisible(true)}
-        >
-          <Ionicons name="chatbubble" size={28} color="#fff" />
-        </TouchableOpacity>
+      {/* Botões flutuantes - só mostra quando não há chat ativo */}
+      {!selectedContact && (
+        <>
+          {/* Botão de IA */}
+          <TouchableOpacity
+            style={styles.fabAI}
+            onPress={handleStartAIChat}
+          >
+            <Ionicons name="sparkles" size={28} color="#fff" />
+          </TouchableOpacity>
+          
+          {/* Botão de conversa */}
+          <TouchableOpacity
+            style={styles.fab}
+            onPress={() => setIsModalVisible(true)}
+          >
+            <Ionicons name="chatbubble" size={28} color="#fff" />
+          </TouchableOpacity>
+        </>
       )}
 
-      {/* Modal de seleção de mecânico */}
-      <MechanicSelector
-        mechanics={MOCK_MECHANICS}
-        onSelect={handleSelectMechanic}
+      {/* Modal de seleção de contato */}
+      <ContactSelector
+        contacts={getContacts()}
+        onSelect={handleSelectContact}
         visible={isModalVisible}
         onClose={() => setIsModalVisible(false)}
+        title={mode === 'mechanic' ? 'Selecione um usuário' : 'Selecione um mecânico'}
       />
     </SafeAreaView>
   );

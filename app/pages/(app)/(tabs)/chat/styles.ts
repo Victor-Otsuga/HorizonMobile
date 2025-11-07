@@ -177,7 +177,22 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 6,
-  
+  },
+  fabAI: {
+    position: 'absolute',
+    right: 20,
+    bottom: 180,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#FF4444',
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 6,
+    shadowColor: '#FF4444',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 6,
   },
   modalOverlay: {
     flex: 1,
