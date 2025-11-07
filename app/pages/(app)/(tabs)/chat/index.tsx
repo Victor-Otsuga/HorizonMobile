@@ -11,6 +11,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Image,
+  Animated,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -30,7 +31,7 @@ interface Message {
 interface Mechanic {
   id: string;
   name: string;
-  avatar: string;
+  avatar: string | any;
   isOnline: boolean;
   specialty: string;
 }
@@ -38,7 +39,7 @@ interface Mechanic {
 interface User {
   id: string;
   name: string;
-  avatar: string;
+  avatar: string | any;
   isOnline: boolean;
   vehicle?: string;
 }
@@ -53,8 +54,8 @@ interface Conversation {
 // IA Assistant
 const AI_ASSISTANT: Mechanic = {
   id: 'ai_assistant',
-  name: 'Assistente IA',
-  avatar: 'https://cdn-icons-png.flaticon.com/512/4712/4712109.png',
+  name: 'Hori',
+  avatar: require('../../../../../assets/logo.jpg'),
   isOnline: true,
   specialty: 'Assistente Virtual',
 };
@@ -203,10 +204,14 @@ const ConversationItem = ({
   const contact = conversation.contact;
   const isMechanic = 'specialty' in contact;
 
+  const getAvatarSource = (avatar: string | any) => {
+    return typeof avatar === 'string' ? { uri: avatar } : avatar;
+  };
+
   return (
     <TouchableOpacity style={styles.conversationItem} onPress={onPress}>
       <View style={styles.conversationAvatarContainer}>
-        <Image source={{ uri: contact.avatar }} style={styles.conversationAvatar} />
+        <Image source={getAvatarSource(contact.avatar)} style={styles.conversationAvatar} />
         {contact.isOnline && <View style={styles.onlineIndicatorAbsolute} />}
       </View>
       <View style={styles.conversationContent}>
@@ -226,6 +231,77 @@ const ConversationItem = ({
         </View>
       </View>
     </TouchableOpacity>
+  );
+};
+
+// Componente de animação de digitando
+const TypingIndicator = () => {
+  const dot1 = useRef(new Animated.Value(0)).current;
+  const dot2 = useRef(new Animated.Value(0)).current;
+  const dot3 = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const animateDot = (dot: Animated.Value, delay: number) => {
+      return Animated.loop(
+        Animated.sequence([
+          Animated.delay(delay),
+          Animated.timing(dot, {
+            toValue: 1,
+            duration: 400,
+            useNativeDriver: true,
+          }),
+          Animated.timing(dot, {
+            toValue: 0,
+            duration: 400,
+            useNativeDriver: true,
+          }),
+        ])
+      );
+    };
+
+    const animations = [
+      animateDot(dot1, 0),
+      animateDot(dot2, 200),
+      animateDot(dot3, 400),
+    ];
+
+    animations.forEach((anim) => anim.start());
+
+    return () => {
+      animations.forEach((anim) => anim.stop());
+    };
+  }, []);
+
+  const getOpacity = (dot: Animated.Value) => {
+    return dot.interpolate({
+      inputRange: [0, 1],
+      outputRange: [0.3, 1],
+    });
+  };
+
+  return (
+    <View style={styles.typingIndicator}>
+      <View style={styles.typingDots}>
+        <Animated.View
+          style={[
+            styles.typingDot,
+            { opacity: getOpacity(dot1) },
+          ]}
+        />
+        <Animated.View
+          style={[
+            styles.typingDot,
+            { opacity: getOpacity(dot2) },
+          ]}
+        />
+        <Animated.View
+          style={[
+            styles.typingDot,
+            { opacity: getOpacity(dot3) },
+          ]}
+        />
+      </View>
+    </View>
   );
 };
 
@@ -292,7 +368,10 @@ const ContactSelector = ({
                   }}
                 >
                   <View style={styles.mechanicAvatarContainer}>
-                    <Image source={{ uri: item.avatar }} style={styles.mechanicAvatar} />
+                    <Image 
+                      source={typeof item.avatar === 'string' ? { uri: item.avatar } : item.avatar} 
+                      style={styles.mechanicAvatar} 
+                    />
                     <View
                       style={[
                         styles.onlineIndicator,
@@ -330,6 +409,7 @@ export default function Chat() {
   const [isTyping, setIsTyping] = useState(false);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const flatListRef = useRef<FlatList>(null);
+  const previousModeRef = useRef<string | null>(null);
   
   // Determinar lista de contatos baseado no modo
   const getContacts = (): (Mechanic | User)[] => {
@@ -406,6 +486,22 @@ export default function Chat() {
     loadConversations();
   }, []);
 
+  // Limpar histórico da IA quando trocar de modo (usuário <-> mecânico)
+  useEffect(() => {
+    if (previousModeRef.current !== null && previousModeRef.current !== mode) {
+      // Modo mudou, limpar histórico da IA
+      AsyncStorage.removeItem(`chat_${AI_ASSISTANT.id}`).then(() => {
+        // Se estiver conversando com a IA, limpar mensagens também
+        if (selectedContact?.id === AI_ASSISTANT.id) {
+          setMessages([]);
+        }
+        // Recarregar lista de conversas
+        loadConversations();
+      });
+    }
+    previousModeRef.current = mode;
+  }, [mode]);
+
   // Atualizar lista de conversas quando voltar para tela principal ou mudar modo
   useEffect(() => {
     if (!selectedContact) {
@@ -439,19 +535,24 @@ export default function Chat() {
     if (savedMessages && savedMessages.length > 0) {
       setMessages(savedMessages);
     } else {
-      // Mensagem inicial de boas-vindas
-      const isMechanic = 'specialty' in contact;
-      const welcomeText = isMechanic 
-        ? `Olá! Sou ${contact.name}. Como posso ajudar você hoje?`
-        : `Olá! Sou ${contact.name}. Preciso de ajuda com meu veículo.`;
-      
-      const welcomeMessage: Message = {
-        id: Date.now().toString(),
-        text: welcomeText,
-        timestamp: new Date().toISOString(),
-        isMe: false,
-      };
-      setMessages([welcomeMessage]);
+      // Mensagem inicial de boas-vindas (apenas para contatos que não são IA)
+      if (contact.id !== AI_ASSISTANT.id) {
+        const isMechanic = 'specialty' in contact;
+        const welcomeText = isMechanic 
+          ? `Olá! Sou ${contact.name}. Como posso ajudar você hoje?`
+          : `Olá! Sou ${contact.name}. Preciso de ajuda com meu veículo.`;
+        
+        const welcomeMessage: Message = {
+          id: Date.now().toString(),
+          text: welcomeText,
+          timestamp: new Date().toISOString(),
+          isMe: false,
+        };
+        setMessages([welcomeMessage]);
+      } else {
+        // IA começa sem mensagem inicial
+        setMessages([]);
+      }
     }
   };
 
@@ -459,35 +560,62 @@ export default function Chat() {
   const handleStartAIChat = async () => {
     setSelectedContact(AI_ASSISTANT);
     
+    // Tentar carregar mensagens salvas
     const savedMessages = await loadMessages(AI_ASSISTANT.id);
     
     if (savedMessages && savedMessages.length > 0) {
       setMessages(savedMessages);
     } else {
-      const welcomeMessage: Message = {
-        id: Date.now().toString(),
-        text: 'Olá! Sou seu Assistente IA. Como posso ajudar você hoje?',
-        timestamp: new Date().toISOString(),
-        isMe: false,
-      };
-      setMessages([welcomeMessage]);
+      // Começar sem mensagem inicial se não houver histórico
+      setMessages([]);
+    }
+  };
+
+  // Função para fazer requisição à API da Hori
+  const sendMessageToHori = async (message: string): Promise<string> => {
+    try {
+      const response = await fetch('https://horizon-n8n.jq0etc.easypanel.host/webhook/hori', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': '652116e6fb024df8b54df7a63079bf25',
+        },
+        body: JSON.stringify({
+          msg: message,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro ao comunicar com a API: ${response.status}`);
+      }
+
+      const data = await response.json();
+      // Tentar diferentes formatos de resposta
+      if (typeof data === 'string') {
+        return data;
+      }
+      return data.output || data.message || data.text || data.msg || JSON.stringify(data);
+    } catch (error) {
+      console.error('Erro ao enviar mensagem para Hori:', error);
+      return 'Desculpe, ocorreu um erro ao processar sua mensagem. Tente novamente.';
     }
   };
 
   // Função para voltar à lista de conversas
-  const handleBackToConversations = () => {
+  const handleBackToConversations = async () => {
     setSelectedContact(null);
     setMessages([]);
     loadConversations();
   };
 
   // Enviar mensagem
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!inputText.trim() || !selectedContact) return;
 
+    const messageText = inputText.trim();
     const newMessage: Message = {
       id: Date.now().toString(),
-      text: inputText,
+      text: messageText,
       timestamp: new Date().toISOString(),
       isMe: true,
     };
@@ -498,17 +626,41 @@ export default function Chat() {
     // Mostrar indicador de digitação
     setIsTyping(true);
 
-    // Simular resposta automática após 2 segundos
-    setTimeout(() => {
-      setIsTyping(false);
-      const responseMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        text: generateAutoResponse(),
-        timestamp: new Date().toISOString(),
-        isMe: false,
-      };
-      setMessages((prev) => [...prev, responseMessage]);
-    }, 2000);
+    // Se for a IA, fazer requisição à API
+    if (selectedContact.id === AI_ASSISTANT.id) {
+      try {
+        const aiResponse = await sendMessageToHori(messageText);
+        setIsTyping(false);
+        const responseMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          text: aiResponse,
+          timestamp: new Date().toISOString(),
+          isMe: false,
+        };
+        setMessages((prev) => [...prev, responseMessage]);
+      } catch (error) {
+        setIsTyping(false);
+        const errorMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          text: 'Desculpe, ocorreu um erro ao processar sua mensagem. Tente novamente.',
+          timestamp: new Date().toISOString(),
+          isMe: false,
+        };
+        setMessages((prev) => [...prev, errorMessage]);
+      }
+    } else {
+      // Para outros contatos, usar resposta automática simulada
+      setTimeout(() => {
+        setIsTyping(false);
+        const responseMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          text: generateAutoResponse(),
+          timestamp: new Date().toISOString(),
+          isMe: false,
+        };
+        setMessages((prev) => [...prev, responseMessage]);
+      }, 2000);
+    }
   };
 
   // Gerar resposta automática simulada
@@ -616,12 +768,15 @@ export default function Chat() {
               <Ionicons name="arrow-back" size={24} color={colors.text} />
             </TouchableOpacity>
             <View style={styles.chatHeaderInfo}>
-              <Image source={{ uri: selectedContact.avatar }} style={styles.headerAvatar} />
+              <Image 
+                source={typeof selectedContact.avatar === 'string' ? { uri: selectedContact.avatar } : selectedContact.avatar} 
+                style={styles.headerAvatar} 
+              />
               <View>
                 <Text style={styles.headerName}>{selectedContact.name}</Text>
                 <Text style={styles.headerStatus}>
                   {selectedContact.id === AI_ASSISTANT.id 
-                    ? '🤖 Assistente IA' 
+                    ? '🤖 Hori' 
                     : selectedContact.isOnline 
                     ? '🟢 Online' 
                     : '⚪ Offline'}
@@ -645,13 +800,7 @@ export default function Chat() {
             contentContainerStyle={styles.messagesList}
             showsVerticalScrollIndicator={false}
             ListFooterComponent={
-              isTyping ? (
-                <View style={styles.typingIndicator}>
-                  <Text style={styles.typingText}>
-                    🤔 {selectedContact?.id === AI_ASSISTANT.id ? 'Assistente IA' : selectedContact?.name} está digitando...
-                  </Text>
-                </View>
-              ) : null
+              isTyping ? <TypingIndicator /> : null
             }
           />
 

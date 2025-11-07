@@ -94,6 +94,22 @@ const styles = StyleSheet.create({
     padding: 12,
     alignItems: 'flex-start',
   },
+  typingDots: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.inputBackground,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 20,
+    borderBottomLeftRadius: 4,
+  },
+  typingDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: colors.textLight,
+    marginHorizontal: 3,
+  },
   typingText: {
     fontSize: 13,
     color: colors.textLight,
