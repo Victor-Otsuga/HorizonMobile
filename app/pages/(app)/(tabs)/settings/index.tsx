@@ -45,11 +45,11 @@ export default function ProfileScreen() {
         <Text style={styles.optionText}>Alterar Senha</Text>
       </Pressable>
 
-      <Pressable style={styles.option} onPress={() => router.push('/profile/notifications')}>
+      <Pressable style={styles.option} onPress={() => router.push('../ranking')}>
         <View style={styles.iconCircle}>
-          <Text style={styles.iconText}>🔔</Text>
+          <Text style={styles.iconText}>🏆</Text>
         </View>
-        <Text style={styles.optionText}>Notificações</Text>
+        <Text style={styles.optionText}>Nível</Text>
       </Pressable>
 
       <Pressable style={styles.option} onPress={toggle}>

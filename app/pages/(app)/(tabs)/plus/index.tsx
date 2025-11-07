@@ -10,6 +10,7 @@ import {
   ScrollView,
   Animated,
   Alert,
+  FlatList,
 } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { Ionicons } from '@expo/vector-icons';
@@ -19,6 +20,7 @@ import CircularProgress from '../../../../components/CircularProgress';
 import styles from './styles';
 import { useViewMode } from '../../../../../context/ViewModeContext';
 import { Image } from 'react-native';
+import {router} from 'expo-router'
 
 export default function QRScannerScreen() {
   const [permission, requestPermission] = useCameraPermissions();
@@ -75,6 +77,38 @@ export default function QRScannerScreen() {
     } finally {
       setLoadingInfo(false);
     }
+  };
+
+  const [showHistory, setShowHistory] = useState(false);
+  const [showNote, setShowNote] = useState(false);
+  const [note, setNote] = useState('');
+
+  const maintenanceHistory = [
+    { id: '1', date: '12/02/2025', service: 'Troca de óleo e filtros', km: '81.300 km' },
+    { id: '2', date: '10/08/2024', service: 'Revisão completa', km: '70.000 km' },
+    { id: '3', date: '05/03/2024', service: 'Troca de pastilhas de freio', km: '62.500 km' },
+    { id: '4', date: '15/09/2023', service: 'Balanceamento e alinhamento', km: '55.000 km' },
+  ];
+
+  // 📋 Ver histórico
+  const handleShowHistory = () => {
+    setShowHistory(true);
+  };
+
+  // 📝 Adicionar observação (não armazenada)
+  const handleAddNote = () => {
+    setShowNote(true);
+  };
+
+  const handleSaveNote = () => {
+    Alert.alert('Observação registrada', note || 'Sem texto adicionado');
+    setNote('');
+    setShowNote(false);
+  };
+
+  // 🧭 Agendar revisão → ir para mecânicas
+  const handleSchedule = () => {
+    router.push('../store');
   };
 
   const handleConfirmVisit = () => {
@@ -342,14 +376,14 @@ export default function QRScannerScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        {/* Single car image / 3D placeholder */}
+        {/* Card do carro */}
         <View style={styles.card}>
           <View style={styles.modelPlaceholder}>
             <Image source={require('../../../../../assets/civic.png')} style={styles.modelImage} resizeMode="cover" />
           </View>
         </View>
 
-        {/* Car info */}
+        {/* Info do carro */}
         <View style={styles.infoCard}>
           <Text style={styles.title}>Honda Civic EX</Text>
           <Text style={styles.subtitle}>2019/2019</Text>
@@ -391,11 +425,11 @@ export default function QRScannerScreen() {
           </View>
         </View>
 
-        {/* Status / Alerts */}
+        {/* Status / Alertas */}
         <View style={styles.alertsSection}>
           <View style={styles.statusRow}>
             <View style={styles.statusItem}>
-              <CircularProgress size={68} strokeWidth={6} progress={85} color={styles.ctaButton.backgroundColor || '#2ecc71'} bgColor="#e6f4ea">
+              <CircularProgress size={68} strokeWidth={6} progress={85} color="#2ecc71" bgColor="#e6f4ea">
                 <Text style={styles.statusPercent}>85%</Text>
               </CircularProgress>
               <Text style={styles.statusLabel}>Bateria</Text>
@@ -407,7 +441,7 @@ export default function QRScannerScreen() {
               <Text style={styles.statusLabel}>Óleo</Text>
             </View>
             <View style={styles.statusItem}>
-              <CircularProgress size={68} strokeWidth={6} progress={90} color={styles.ctaButton.backgroundColor || '#2ecc71'} bgColor="#e6f4ea">
+              <CircularProgress size={68} strokeWidth={6} progress={90} color="#2ecc71" bgColor="#e6f4ea">
                 <Text style={styles.statusPercent}>90%</Text>
               </CircularProgress>
               <Text style={styles.statusLabel}>Pneus</Text>
@@ -420,14 +454,65 @@ export default function QRScannerScreen() {
           <View style={styles.alertCard}><Text style={styles.alertTitle}>Revisão de freios</Text><Text style={styles.alertSub}>recomendada</Text></View>
           <View style={styles.alertCardSuccess}><Text style={styles.alertTitle}>IPVA 2025</Text><Text style={styles.alertSub}>pago</Text></View>
 
-          <TouchableOpacity style={styles.secondaryButton}><Text style={styles.secondaryText}>Ver histórico de manutenções</Text></TouchableOpacity>
-          <TouchableOpacity style={styles.secondaryButton}><Text style={styles.secondaryText}>Adicionar observação do veículo</Text></TouchableOpacity>
+          <TouchableOpacity style={styles.secondaryButton} onPress={handleShowHistory}>
+            <Text style={styles.secondaryText}>Ver histórico de manutenções</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.secondaryButton} onPress={handleAddNote}>
+            <Text style={styles.secondaryText}>Adicionar observação do veículo</Text>
+          </TouchableOpacity>
         </View>
 
-        <TouchableOpacity style={styles.ctaButton}>
+        <TouchableOpacity style={styles.ctaButton} onPress={handleSchedule}>
           <Text style={styles.ctaText}>Agendar Revisão</Text>
         </TouchableOpacity>
       </ScrollView>
+
+      {/* 📋 Modal Histórico */}
+      <Modal visible={showHistory} animationType="slide" transparent={true}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalBox}>
+            <Text style={styles.modalTitle}>Histórico de Manutenções</Text>
+            <FlatList
+              data={maintenanceHistory}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => (
+                <View style={styles.historyItem}>
+                  <Text style={styles.historyDate}>{item.date} - {item.km}</Text>
+                  <Text style={styles.historyService}>{item.service}</Text>
+                </View>
+              )}
+            />
+            <TouchableOpacity style={styles.closeButton} onPress={() => setShowHistory(false)}>
+              <Text style={styles.closeButtonText}>Fechar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* 📝 Modal Observação */}
+      <Modal visible={showNote} animationType="fade" transparent={true}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalBox}>
+            <Text style={styles.modalTitle}>Adicionar observação</Text>
+            <TextInput
+              value={note}
+              onChangeText={setNote}
+              placeholder="Digite aqui sua observação..."
+              style={styles.noteInput}
+              multiline
+            />
+            <View style={styles.noteButtons}>
+              <TouchableOpacity style={styles.closeButton} onPress={() => setShowNote(false)}>
+                <Text style={styles.closeButtonText}>Cancelar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.ctaButton} onPress={handleSaveNote}>
+                <Text style={styles.ctaText}>Registrar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }

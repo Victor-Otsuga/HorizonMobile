@@ -67,17 +67,17 @@ export default StyleSheet.create({
 		alignItems: 'center',
 		marginTop: 8,
 	},
-		badge: {
-			backgroundColor: colors.inputBackground,
+	badge: {
+		backgroundColor: colors.inputBackground,
 		paddingHorizontal: 8,
 		paddingVertical: 6,
 		borderRadius: 8,
 	},
-		badgeText: {
-			color: colors.textDark,
+	badgeText: {
+		color: colors.textDark,
 	},
-		km: {
-			color: colors.textLight,
+	km: {
+		color: colors.textLight,
 		marginLeft: 10,
 	},
 	featuresRow: {
@@ -85,19 +85,19 @@ export default StyleSheet.create({
 		justifyContent: 'space-between',
 		marginTop: 12,
 	},
-		featureBox: {
-			backgroundColor: colors.light,
+	featureBox: {
+		backgroundColor: colors.light,
 		width: (width - 64) / 3,
 		padding: 12,
 		borderRadius: 10,
 		alignItems: 'center',
 	},
-		featureLabel: {
-			color: colors.textLight,
+	featureLabel: {
+		color: colors.textLight,
 		marginTop: 8,
 	},
 	featureValue: {
-			color: colors.textDark,
+		color: colors.textDark,
 		marginTop: 6,
 		fontWeight: '600',
 	},
@@ -114,10 +114,10 @@ export default StyleSheet.create({
 		marginTop: 6,
 		fontWeight: '600',
 	},
-		alertsSection: {
-			marginTop: 8,
-			marginBottom: 18,
-		},
+	alertsSection: {
+		marginTop: 8,
+		marginBottom: 18,
+	},
 	statusRow: {
 		flexDirection: 'row',
 		justifyContent: 'space-between',
@@ -126,30 +126,30 @@ export default StyleSheet.create({
 		alignItems: 'center',
 		width: (width - 64) / 3,
 	},
-		statusCircleGreen: {
-			width: 68,
-			height: 68,
-			borderRadius: 34,
-			backgroundColor: '#e8f5e9',
+	statusCircleGreen: {
+		width: 68,
+		height: 68,
+		borderRadius: 34,
+		backgroundColor: '#e8f5e9',
 		justifyContent: 'center',
 		alignItems: 'center',
 		marginBottom: 8,
 	},
-		statusCircleYellow: {
-			width: 68,
-			height: 68,
-			borderRadius: 34,
-			backgroundColor: '#fff3e0',
+	statusCircleYellow: {
+		width: 68,
+		height: 68,
+		borderRadius: 34,
+		backgroundColor: '#fff3e0',
 		justifyContent: 'center',
 		alignItems: 'center',
 		marginBottom: 8,
 	},
 	statusPercent: {
-			color: colors.textDark,
+		color: colors.textDark,
 		fontWeight: '700',
 	},
 	statusLabel: {
-			color: colors.textLight,
+		color: colors.textLight,
 	},
 	sectionTitle: {
 		color: colors.background,
@@ -158,8 +158,8 @@ export default StyleSheet.create({
 		marginBottom: 8,
 		fontWeight: '600',
 	},
-		alertCard: {
-			backgroundColor: colors.light,
+	alertCard: {
+		backgroundColor: colors.light,
 		padding: 14,
 		borderRadius: 12,
 		marginBottom: 8,
@@ -167,7 +167,7 @@ export default StyleSheet.create({
 		borderLeftColor: '#f39c12',
 	},
 	alertCardSuccess: {
-			backgroundColor: colors.light,
+		backgroundColor: colors.light,
 		padding: 14,
 		borderRadius: 12,
 		marginBottom: 8,
@@ -175,34 +175,91 @@ export default StyleSheet.create({
 		borderLeftColor: '#2ecc71',
 	},
 	alertTitle: {
-			color: colors.textDark,
+		color: colors.textDark,
 		fontWeight: '600',
 	},
 	alertSub: {
-			color: colors.textLight,
+		color: colors.textLight,
 		marginTop: 6,
 	},
 	secondaryButton: {
-			borderWidth: 1,
-			borderColor: colors.border,
+		borderWidth: 1,
+		borderColor: colors.border,
 		padding: 12,
 		borderRadius: 10,
 		marginTop: 8,
 		alignItems: 'center',
 	},
 	secondaryText: {
-			color: colors.textDark,
+		color: colors.textDark,
 	},
 	ctaButton: {
-			backgroundColor: colors.Green,
+		backgroundColor: colors.Green,
 		padding: 14,
 		borderRadius: 12,
 		alignItems: 'center',
 		marginBottom: 16,
 	},
 	ctaText: {
-			color: colors.background,
+		color: colors.background,
 		fontWeight: '700',
 		fontSize: 16,
 	},
+	modalOverlay: {
+		flex: 1,
+		backgroundColor: 'rgba(0,0,0,0.5)',
+		justifyContent: 'center',
+		alignItems: 'center',
+	},
+	modalBox: {
+		width: '90%',
+		backgroundColor: '#fff',
+		borderRadius: 16,
+		padding: 20,
+	},
+	modalTitle: {
+		fontSize: 18,
+		fontWeight: '600',
+		marginBottom: 10,
+	},
+	historyItem: {
+		borderBottomWidth: 1,
+		borderBottomColor: '#eee',
+		paddingVertical: 8,
+	},
+	historyDate: {
+		fontSize: 14,
+		color: '#555',
+	},
+	historyService: {
+		fontSize: 15,
+		fontWeight: '500',
+		color: '#333',
+	},
+	noteInput: {
+		borderWidth: 1,
+		borderColor: '#ccc',
+		borderRadius: 8,
+		padding: 10,
+		height: 100,
+		textAlignVertical: 'top',
+	},
+	noteButtons: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		marginTop: 15,
+	},
+	closeButton: {
+		backgroundColor: '#ccc',
+		padding: 14,
+		borderRadius: 12,
+		alignItems: 'center',
+		marginBottom: 16,
+	},
+	closeButtonText: {
+		color: '#fff',
+		fontWeight: '600',
+		
+	},
+
 });

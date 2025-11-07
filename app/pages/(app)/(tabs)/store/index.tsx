@@ -48,10 +48,52 @@ const stores = [
   },
   {
     id: '4',
-    name: 'Tecpolish ',
+    name: 'Tecpolish',
     rating: 4.4,
     reviews: 85,
     image: 'p5',
+  },
+  {
+    id: '5',
+    name: 'Auto Center Butantã',
+    rating: 4.8,
+    reviews: 265,
+    image: 'p2',
+  },
+  {
+    id: '6',
+    name: 'Mecânica Vila Sônia',
+    rating: 4.6,
+    reviews: 188,
+    image: 'p3',
+  },
+  {
+    id: '7',
+    name: 'PowerCar Garage',
+    rating: 4.9,
+    reviews: 342,
+    image: 'p4',
+  },
+  {
+    id: '8',
+    name: 'Torque Motors',
+    rating: 4.7,
+    reviews: 276,
+    image: 'p1',
+  },
+  {
+    id: '9',
+    name: 'SpeedMax Auto',
+    rating: 4.5,
+    reviews: 159,
+    image: 'p6',
+  },
+  {
+    id: '10',
+    name: 'Dr. Motor',
+    rating: 4.6,
+    reviews: 220,
+    image: 'p7',
   },
 ];
 
@@ -84,7 +126,50 @@ const partners = [
     reviews: 140,
     image: 'p9',
   },
+  {
+    id: '5',
+    name: 'Pit Stop Garage',
+    rating: 4.8,
+    reviews: 295,
+    image: 'p1',
+  },
+  {
+    id: '6',
+    name: 'AutoPrime',
+    rating: 4.7,
+    reviews: 243,
+    image: 'p2',
+  },
+  {
+    id: '7',
+    name: 'FullCar Service',
+    rating: 4.9,
+    reviews: 510,
+    image: 'p3',
+  },
+  {
+    id: '8',
+    name: 'TopGear Auto Center',
+    rating: 4.6,
+    reviews: 198,
+    image: 'p4',
+  },
+  {
+    id: '9',
+    name: 'Elite Car Service',
+    rating: 4.8,
+    reviews: 272,
+    image: 'p5',
+  },
+  {
+    id: '10',
+    name: 'Rota 46 Garage',
+    rating: 4.7,
+    reviews: 235,
+    image: 'p8',
+  },
 ];
+
 
 export default function Store() {
   const { mode } = useViewMode();
@@ -158,7 +243,7 @@ export default function Store() {
                     borderRadius: 8,
                   }}
                   onPress={() => Alert.alert(
-                    "Aviso", // título
+                    "Tudo Certo!", // título
                     "Um vendedor entrará em contato via Whatsapp!", // mensagem
                     [{ text: "OK" }] // botão(s) opcional
                   )}
@@ -203,8 +288,8 @@ export default function Store() {
                 paddingHorizontal: 12,
                 borderRadius: 8,
               }}
-              onPress={() => aAlert.alert(
-                "Aviso", // título
+              onPress={() => Alert.alert(
+                "Tudo Certo!", // título
                 "Um vendedor entrará em contato via Whatsapp!", // mensagem
                 [{ text: "OK" }] 
               )}

@@ -79,6 +79,11 @@ export default function TabLayout() {
       <Tabs.Screen name="store/styles" options={{ href: null }} />
       <Tabs.Screen name="settings/profile" options={{ href: null }} />
       <Tabs.Screen name="store/profile" options={{ href: null }} />
+      <Tabs.Screen name="ranking/index" options={{ href: null }} />
+      <Tabs.Screen name="ranking/styles" options={{ href: null }} />
+      <Tabs.Screen name="ranking/benefits" options={{ href: null }} />
+      <Tabs.Screen name="ranking/stylesBenefits" options={{ href: null }} />
+      
     </Tabs>
   )
 }
