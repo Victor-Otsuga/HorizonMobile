@@ -8,10 +8,11 @@ import {
   TextInput,
   Modal,
   SafeAreaView,
-  KeyboardAvoidingView,
   Platform,
   Image,
   Animated,
+  Keyboard,
+  KeyboardAvoidingView,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -408,6 +409,7 @@ export default function Chat() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
   const flatListRef = useRef<FlatList>(null);
   const previousModeRef = useRef<string | null>(null);
   
@@ -517,6 +519,31 @@ export default function Chat() {
       }, 100);
     }
   }, [messages]);
+
+  // Ajustar scroll e posição quando teclado aparecer/desaparecer
+  useEffect(() => {
+    const keyboardWillShow = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
+      (e) => {
+        setKeyboardHeight(e.endCoordinates.height);
+        setTimeout(() => {
+          flatListRef.current?.scrollToEnd({ animated: true });
+        }, 100);
+      }
+    );
+
+    const keyboardWillHide = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
+      () => {
+        setKeyboardHeight(0);
+      }
+    );
+
+    return () => {
+      keyboardWillShow.remove();
+      keyboardWillHide.remove();
+    };
+  }, []);
 
   // Salvar mensagens sempre que mudarem
   useEffect(() => {
@@ -755,10 +782,7 @@ export default function Chat() {
   return (
     <SafeAreaView style={styles.container}>
       {selectedContact ? (
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={styles.chatContainer}
-        >
+        <View style={styles.chatContainer}>
           {/* Cabeçalho da conversa */}
           <View style={styles.chatHeader}>
             <TouchableOpacity
@@ -802,10 +826,18 @@ export default function Chat() {
             ListFooterComponent={
               isTyping ? <TypingIndicator /> : null
             }
+            keyboardShouldPersistTaps="handled"
           />
 
-          {/* Input de mensagem */}
-          <View style={[styles.inputContainer, { bottom: 70 + insets.bottom }]}>
+          {/* Input de mensagem - ajusta posição baseado no teclado */}
+          <View style={[
+            styles.inputContainer, 
+            { 
+              bottom: keyboardHeight > 0 
+                ? keyboardHeight
+                : 70 + insets.bottom 
+            }
+          ]}>
             <TextInput
               style={styles.input}
               value={inputText}
@@ -827,7 +859,7 @@ export default function Chat() {
               />
             </TouchableOpacity>
           </View>
-        </KeyboardAvoidingView>
+        </View>
       ) : (
         <>
           <View style={styles.conversationsHeader}>
