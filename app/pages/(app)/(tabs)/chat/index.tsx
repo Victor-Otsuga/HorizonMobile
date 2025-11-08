@@ -782,7 +782,11 @@ export default function Chat() {
   return (
     <SafeAreaView style={styles.container}>
       {selectedContact ? (
-          <View style={styles.chatContainer}>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={styles.chatContainer}
+            keyboardVerticalOffset={-100}
+          >
             {/* Cabeçalho da conversa */}
             <View style={styles.chatHeader}>
               <TouchableOpacity
@@ -832,15 +836,19 @@ export default function Chat() {
             />
   
             {/* Input de mensagem */}
-            <View style={[
-              styles.inputContainer, 
-              { 
-                bottom: keyboardHeight > 0 
-                  ? keyboardHeight + 70
-                  : 70 + insets.bottom,
-                paddingBottom: keyboardHeight > 0 ? (Platform.OS === 'ios' ? 10 : insets.bottom + 10) : insets.bottom + 5
-              }
-            ]}>
+            <View
+              style={[
+                styles.inputContainer,
+                {
+                  // Use the same baseline as before so the input sits above the
+                  // bottom tab bar when the keyboard is hidden. KeyboardAvoidingView
+                  // will move this view above the keyboard on open; avoid manual
+                  // keyboardHeight adjustments which caused inconsistent placement.
+                  bottom: 70 + insets.bottom,
+                  paddingBottom: insets.bottom + 6,
+                },
+              ]}
+            >
               <TextInput
                 style={styles.input}
                 value={inputText}
@@ -865,8 +873,8 @@ export default function Chat() {
                 />
               </TouchableOpacity>
             </View>
-          </View>
-      ) : (
+    </KeyboardAvoidingView>
+  ) : (
         <>
           <View style={styles.conversationsHeader}>
             <Text style={styles.conversationsHeaderText}>Conversas</Text>
