@@ -782,84 +782,90 @@ export default function Chat() {
   return (
     <SafeAreaView style={styles.container}>
       {selectedContact ? (
-        <View style={styles.chatContainer}>
-          {/* Cabeçalho da conversa */}
-          <View style={styles.chatHeader}>
-            <TouchableOpacity
-              style={styles.backButton}
-              onPress={handleBackToConversations}
-            >
-              <Ionicons name="arrow-back" size={24} color={colors.text} />
-            </TouchableOpacity>
-            <View style={styles.chatHeaderInfo}>
-              <Image 
-                source={typeof selectedContact.avatar === 'string' ? { uri: selectedContact.avatar } : selectedContact.avatar} 
-                style={styles.headerAvatar} 
-              />
-              <View>
-                <Text style={styles.headerName}>{selectedContact.name}</Text>
-                <Text style={styles.headerStatus}>
-                  {selectedContact.id === AI_ASSISTANT.id 
-                    ? '🤖 Hori' 
-                    : selectedContact.isOnline 
-                    ? '🟢 Online' 
-                    : '⚪ Offline'}
-                </Text>
+          <View style={styles.chatContainer}>
+            {/* Cabeçalho da conversa */}
+            <View style={styles.chatHeader}>
+              <TouchableOpacity
+                style={styles.backButton}
+                onPress={handleBackToConversations}
+              >
+                <Ionicons name="arrow-back" size={24} color={colors.text} />
+              </TouchableOpacity>
+              <View style={styles.chatHeaderInfo}>
+                <Image
+                  source={
+                    typeof selectedContact.avatar === 'string'
+                      ? { uri: selectedContact.avatar }
+                      : selectedContact.avatar
+                  }
+                  style={styles.headerAvatar}
+                />
+                <View>
+                  <Text style={styles.headerName}>{selectedContact.name}</Text>
+                  <Text style={styles.headerStatus}>
+                    {selectedContact.id === AI_ASSISTANT.id
+                      ? '🤖 Hori'
+                      : selectedContact.isOnline
+                      ? '🟢 Online'
+                      : '⚪ Offline'}
+                  </Text>
+                </View>
               </View>
+              <TouchableOpacity
+                style={styles.changeMechanicButton}
+                onPress={() => setIsModalVisible(true)}
+              >
+                <Ionicons name="people" size={24} color={colors.primary} />
+              </TouchableOpacity>
             </View>
-            <TouchableOpacity
-              style={styles.changeMechanicButton}
-              onPress={() => setIsModalVisible(true)}
-            >
-              <Ionicons name="people" size={24} color={colors.primary} />
-            </TouchableOpacity>
-          </View>
-
-          {/* Lista de mensagens */}
-          <FlatList
-            ref={flatListRef}
-            data={messages}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => <ChatBubble message={item} />}
-            contentContainerStyle={styles.messagesList}
-            showsVerticalScrollIndicator={false}
-            ListFooterComponent={
-              isTyping ? <TypingIndicator /> : null
-            }
-            keyboardShouldPersistTaps="handled"
-          />
-
-          {/* Input de mensagem - ajusta posição baseado no teclado */}
-          <View style={[
-            styles.inputContainer, 
-            { 
-              bottom: keyboardHeight > 0 
-                ? keyboardHeight
-                : 70 + insets.bottom 
-            }
-          ]}>
-            <TextInput
-              style={styles.input}
-              value={inputText}
-              onChangeText={setInputText}
-              placeholder="Digite sua mensagem..."
-              placeholderTextColor={colors.textLight}
-              multiline
-              maxLength={500}
+  
+            {/* Lista de mensagens */}
+            <FlatList
+              ref={flatListRef}
+              data={messages}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => <ChatBubble message={item} />}
+              contentContainerStyle={styles.messagesList}
+              showsVerticalScrollIndicator={false}
+              ListFooterComponent={isTyping ? <TypingIndicator /> : null}
+              keyboardShouldPersistTaps="handled"
             />
-            <TouchableOpacity
-              style={[styles.sendButton, !inputText.trim() && styles.sendButtonDisabled]}
-              onPress={handleSendMessage}
-              disabled={!inputText.trim()}
-            >
-              <Ionicons
-                name="send"
-                size={24}
-                color={inputText.trim() ? '#fff' : colors.textLight}
+  
+            {/* Input de mensagem */}
+            <View style={[
+              styles.inputContainer, 
+              { 
+                bottom: keyboardHeight > 0 
+                  ? keyboardHeight + 70
+                  : 70 + insets.bottom,
+                paddingBottom: keyboardHeight > 0 ? (Platform.OS === 'ios' ? 10 : insets.bottom + 10) : insets.bottom + 5
+              }
+            ]}>
+              <TextInput
+                style={styles.input}
+                value={inputText}
+                onChangeText={setInputText}
+                placeholder="Digite sua mensagem..."
+                placeholderTextColor={colors.textLight}
+                multiline
+                maxLength={500}
               />
-            </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.sendButton,
+                  !inputText.trim() && styles.sendButtonDisabled,
+                ]}
+                onPress={handleSendMessage}
+                disabled={!inputText.trim()}
+              >
+                <Ionicons
+                  name="send"
+                  size={24}
+                  color={inputText.trim() ? '#fff' : colors.textLight}
+                />
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
       ) : (
         <>
           <View style={styles.conversationsHeader}>
@@ -881,29 +887,25 @@ export default function Chat() {
           ) : (
             <View style={styles.emptyState}>
               <View style={styles.emptyStateIcon}>
-                <Ionicons name="chatbubbles-outline" size={80} color={colors.textLight} />
+                <Ionicons
+                  name="chatbubbles-outline"
+                  size={80}
+                  color={colors.textLight}
+                />
               </View>
               <Text style={styles.emptyStateTitle}>Nenhuma conversa ainda</Text>
               <Text style={styles.emptyStateText}>
-                Toque no botão abaixo para iniciar uma conversa com um mecânico disponível
+                Toque no botão abaixo para iniciar uma conversa com um mecânico
+                disponível
               </Text>
             </View>
           )}
-        </>
-      )}
-
-      {/* Botões flutuantes - só mostra quando não há chat ativo */}
-      {!selectedContact && (
-        <>
-          {/* Botão de IA */}
-          <TouchableOpacity
-            style={styles.fabAI}
-            onPress={handleStartAIChat}
-          >
+  
+          {/* Botões flutuantes */}
+          <TouchableOpacity style={styles.fabAI} onPress={handleStartAIChat}>
             <Ionicons name="sparkles" size={28} color="#fff" />
           </TouchableOpacity>
-          
-          {/* Botão de conversa */}
+  
           <TouchableOpacity
             style={styles.fab}
             onPress={() => setIsModalVisible(true)}
@@ -912,15 +914,19 @@ export default function Chat() {
           </TouchableOpacity>
         </>
       )}
-
+  
       {/* Modal de seleção de contato */}
       <ContactSelector
         contacts={getContacts()}
         onSelect={handleSelectContact}
         visible={isModalVisible}
         onClose={() => setIsModalVisible(false)}
-        title={mode === 'mechanic' ? 'Selecione um usuário' : 'Selecione um mecânico'}
+        title={
+          mode === 'mechanic'
+            ? 'Selecione um usuário'
+            : 'Selecione um mecânico'
+        }
       />
     </SafeAreaView>
-  );
+  );  
 }

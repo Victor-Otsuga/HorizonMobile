@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
   },
   messagesList: {
     padding: 16,
-    paddingBottom: 120,
+    paddingBottom: 160,
   },
   chatBubble: {
     maxWidth: '75%',
@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
   fab: {
     position: 'absolute',
     right: 20,
-    bottom: 100,
+    bottom: 125,
     width: 60,
     height: 60,
     borderRadius: 30,
@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
   fabAI: {
     position: 'absolute',
     right: 20,
-    bottom: 180,
+    bottom: 205,
     width: 60,
     height: 60,
     borderRadius: 30,
